@@ -129,6 +129,10 @@ namespace HyCUBESim {
 				std::cout << ": MUL," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 * operand2;
 				break;
+			case SEXT :
+				std::cout << ": SEXT," << operand1 << "," << operand2 << "\n";
+				ALUTempOut = sext(operand1,operand2);
+				break;
 			case DIV :
 				std::cout << ": DIV," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 / operand2;
@@ -220,15 +224,27 @@ namespace HyCUBESim {
 				break;
 			case STORE :
 				std::cout << ": STORE," << operand1 << "," << operand2 << "\n";
-				ALUTempOut = store(operand1,operand2,4);
+				if(!Pisvalid || predicate){
+					//only store after checking predicate
+					//other operations dont care as the output is not routed.
+					ALUTempOut = store(operand1,operand2,4);
+				}
 				break;
 			case STOREH :
 				std::cout << ": STOREH," << operand1 << "," << operand2 << "\n";
-				ALUTempOut = store(operand1,operand2,2);
+				if(!Pisvalid || predicate){
+					//only store after checking predicate
+					//other operations dont care as the output is not routed.
+					ALUTempOut = store(operand1,operand2,2);
+				}
 				break;
 			case STOREB :
 				std::cout << ": STOREB," << operand1 << "," << operand2 << "\n";
-				ALUTempOut = store(operand1,operand2,1);
+				if(!Pisvalid || predicate){
+					//only store after checking predicate
+					//other operations dont care as the output is not routed.
+					ALUTempOut = store(operand1,operand2,1);
+				}
 				break;
 			case JUMPL :
 				std::cout << ": JUMPL," << operand1 << "," << operand2 << "\n";
@@ -241,6 +257,7 @@ namespace HyCUBESim {
 				ALUTempOut = operand2;
 				break;
 			default :
+				std::cout << "unknown opcode = " << currIns.opcode << "\n";
 				assert(false);
 				std::cout << ": ????," << operand1 << "," << operand2 << "\n";
 				break;
@@ -741,6 +758,17 @@ namespace HyCUBESim {
 				break;
 		}
 
+
+		if(currIns.regbypass[correspondingReg]==0){
+			// only need to store the inputXbar and because prior to the execution
+			// inputXBar values will be loaded P,O1 and O2
+			inputsXBar[incomingDir]=inputs[incomingDir];
+		}
+		else{
+			//no need recursively call if regbypass is not happenning
+			return true;
+		}
+
 		if(currIns.xB.P == xbarIncomingDir){
 //			P.push(val);
 //			return true;
@@ -777,16 +805,6 @@ namespace HyCUBESim {
 				std::cout << ",writtenI2";
 				sinkedtoReg=true;
 			}
-		}
-
-		if(currIns.regbypass[correspondingReg]==0){
-			// only need to store the inputXbar and because prior to the execution
-			// inputXBar values will be loaded P,O1 and O2
-			inputsXBar[incomingDir]=inputs[incomingDir];
-		}
-		else{
-			//no need recursively call if regbypass is not happenning
-			return true;
 		}
 
 
@@ -934,6 +952,9 @@ void CGRATile::printIns(HyIns ins) {
 					std::cout << ",OP=" << "SUB";
 					break;
 				case MUL :
+					std::cout << ",OP=" << "MUL";
+					break;
+				case SEXT :
 					std::cout << ",OP=" << "MUL";
 					break;
 				case DIV :

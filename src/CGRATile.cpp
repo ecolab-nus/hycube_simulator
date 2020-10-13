@@ -30,12 +30,14 @@ namespace HyCUBESim {
 	}
 
 	void CGRATile::execute(int kII) {
+		std::cout << "---------------execute new instruction ----------------------------\n";
 		std::cout << "current PC = " << PC << ",LER=" << LER << ",LSR=" << LSR << "\n";
 		std::cout << "kII =" << kII << ",PC =" << PC << ",y=" << Y << ",x=" << X << "\n";
 		std::cout << "RegInfo ::\n";
 		this->printRegisterInfo();
 
 		HyIns currIns = configMem[PC];
+		std::cout << "currIns ::\n";
 		printIns(currIns);
 		DataType result;
 
@@ -179,7 +181,14 @@ namespace HyCUBESim {
 				break;
 			case CMERGE :
 				std::cout << ": CMERGE," << operand1 << "," << operand2 << "\n";
-				ALUTempOut = operand1;
+				//dmd ALUTempOut = operand1;
+				//dmd:
+				if(I2isvalid){
+					ALUTempOut=operand2;
+				}
+				else{
+					ALUTempOut = operand1;
+				}
 				break;
 			case CMP :
 				std::cout << ": CMP," << operand1 << "," << operand2 << "\n";
@@ -901,8 +910,8 @@ namespace HyCUBESim {
 			res = res | (*dmemPtr)[op2] | ((*dmemPtr)[op2+1] << 8);
 		}
 		else{ //size == 4
-			assert(op2 % 4 == 0);
-			res = res | (*dmemPtr)[op2] | ((*dmemPtr)[op2+1] << 8) | ((*dmemPtr)[op2+2] << 16) | ((*dmemPtr)[op2+2] << 24);
+			//assert(op2 % 4 == 0);//dmd
+			res = res | (*dmemPtr)[op2] | ((*dmemPtr)[op2+1] << 8) | ((*dmemPtr)[op2+2] << 16) | ((*dmemPtr)[op2+3] << 24);
 		}
 		return res;
 	}
@@ -1055,7 +1064,7 @@ void CGRATile::printIns(HyIns ins) {
 			std::cout << ",XB_WEST=" << getNameXBarInput(ins.xB.WEST_O);
 			std::cout << ",XB_SOUTH=" << getNameXBarInput(ins.xB.SOUTH_O);
 
-			std::cout << "\n**END**\n";
+			std::cout << "\n**print ins end**\n";
 }
 
 std::string CGRATile::getNameXBarInput(XBarInput xinp) {

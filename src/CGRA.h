@@ -22,9 +22,11 @@ class CGRA {
 
 		int parseCMEM(std::string CMEMFileName);
 		int parseDMEM(std::string DMEMFileName);
+		int parseDMEM(std::string DMEMFileName,std::string memallocFileName);
 		int executeCycle(int kII);
 
 		std::map<DataType,uint8_t> dmem;
+		std::map<DataType,uint8_t> dmem_post;
 		void printInterestedAddrOutcome();
 
 

@@ -16,7 +16,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
 	if(argc < 2){
-		cout << "HyCUBE_Sim expect two arguments : instruction trc and data trace\n";
+		cout << "HyCUBE_Sim expect two(old version)/three(new version) arguments : instruction trc, data trace and base address allocation\n";
 		return -1;
 	}
 
@@ -25,7 +25,14 @@ int main(int argc, char* argv[]) {
 
 	HyCUBESim::CGRA cgraInstance(4,4);
 	cgraInstance.parseCMEM(cmemfileName);
-	cgraInstance.parseDMEM(dmemfileName);
+//	cout << "argc: "<< argc <<"\n";
+	if(argc==4){
+		cout << "Parsing data file with base address pointers\n";
+		string memallocfileName(argv[3]);
+		cgraInstance.parseDMEM(dmemfileName,memallocfileName);
+	}else{
+		cgraInstance.parseDMEM(dmemfileName);
+	}
 	cgraInstance.printInterestedAddrOutcome();
 
 	int count=0;

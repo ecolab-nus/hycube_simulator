@@ -178,6 +178,66 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 	}
 }
 
+int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
+
+	std::ifstream dmemfile(DMEMFileName.c_str());
+	std::ifstream memallocfile(memallocFileName.c_str());
+	std::string line;
+
+	assert(dmemfile.is_open() && 'Error opening dmem file');
+	assert(memallocfile.is_open() && 'Error opening memalloc file');
+	//ignore the first line
+	std::getline(dmemfile,line);
+	std::getline(memallocfile,line);
+
+	for (int i = 0; i < 4096; ++i) {
+		dmem[i]=0;
+	}
+	std::map<std::string, int> spm_base_addr;
+	while(std::getline(memallocfile,line)){
+		std::istringstream iss2(line);
+
+		std::string var_name;
+		std::string base_addr;
+
+		std::getline(iss2,var_name,',');
+		std::getline(iss2,base_addr,',');
+
+
+		spm_base_addr[var_name]= atoi(base_addr.c_str());
+		std::cout << var_name << "," << spm_base_addr[var_name] << "\n";
+	}
+
+	while(std::getline(dmemfile,line)){
+		std::istringstream iss(line);
+
+		std::string var_name;
+		std::string offset;
+		int addr;
+		std::string pre;
+		std::string post;
+
+		std::getline(iss,var_name,',');
+		std::getline(iss,offset,',');
+		std::getline(iss,pre,',');
+		std::getline(iss,post,',');
+
+		addr = spm_base_addr[var_name]+atoi(offset.c_str());
+
+		//std::cout << addr << "," << pre << "\n";
+		InterestedAddrList.push_back(addr);
+
+		dmem[(DataType)addr]=atoi(pre.c_str());
+		dmem_post[(DataType)addr]=atoi(post.c_str());
+	}
+	dmem[4094]=1;
+	InterestedAddrList.push_back(4094);
+//	std::cout << "Data Memory Content\n";
+//	for (int i = 0; i < 4096; ++i) {
+//		std::cout << i << "," << (int)dmem[i] << "\n";
+//	}
+}
+
 int CGRA::executeCycle(int kII) {
 	for (int y = 0; y < sizeY; ++y) {
 		for (int x = 0; x < sizeX; ++x) {
@@ -198,6 +258,17 @@ void CGRA::printInterestedAddrOutcome() {
 	for(int addr : InterestedAddrList){
 		std::cout << addr << "," << (int)dmem[addr] << "\n";
 	}
+	int correct_count = 0;
+	int wrong_count = 0;
+	for(int addr : InterestedAddrList){
+		if((int)dmem[addr] == (int)dmem_post[addr]){
+			correct_count++;
+		}else{
+			wrong_count++;
+			std::cout << "Data mismatch at address: "<< addr << ", result:" << (int)dmem[addr]<<", expected:" << (int)dmem_post[addr] << "\n";
+		}
+	}
+	std::cout << "Matches ::"<<correct_count<<", Mismatches::"<<wrong_count<< "\n";
 }
 
 XBarInput CGRA::convertStrtoXBI(std::string str) {

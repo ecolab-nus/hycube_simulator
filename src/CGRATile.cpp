@@ -709,7 +709,6 @@ namespace HyCUBESim {
 		HyIns currIns = configMem[PC];
 		XBarInput xbarIncomingDir;
 		Regs correspondingReg;
-
 		inputs[incomingDir]=val;
 		bool sinkedtoReg=false;
 
@@ -818,7 +817,6 @@ namespace HyCUBESim {
 
 
 
-
 		if(currIns.xB.NORTH_O == xbarIncomingDir){
 			connectedTiles[NORTH]->passData(SOUTH,val);
 		}
@@ -826,7 +824,9 @@ namespace HyCUBESim {
 			connectedTiles[EAST]->passData(WEST,val);
 		}
 		if(currIns.xB.WEST_O == xbarIncomingDir){
+			std::cout << "[CGRATile.cpp][passData]West passdata\n" ;
 			connectedTiles[WEST]->passData(EAST,val);
+			std::cout << "[CGRATile.cpp][passData]West passdata done\n" ;
 		}
 		if(currIns.xB.SOUTH_O == xbarIncomingDir){
 			connectedTiles[SOUTH]->passData(NORTH,val);
@@ -834,6 +834,7 @@ namespace HyCUBESim {
 
 //		assert(sinkedtoReg);
 		std::cout << "\n";
+
 		return true;
 	}
 

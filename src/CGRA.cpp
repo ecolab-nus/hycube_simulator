@@ -75,16 +75,26 @@ int CGRA::parseCMEM(std::string CMEMFileName) {
 	    for (int i = 0; i < 16; ++i) {
 			std::getline(cmemfile,line);
 		    std::istringstream iss(line);
-		    std::string phyloc;
+		    std::string phyloc_x;
+				std::string phyloc_y;
 		    std::string op;
 
-		    std::getline(iss,phyloc,',');
+		    std::getline(iss,phyloc_x,' ');
+				std::getline(iss,phyloc_y,',');
 		    std::getline(iss,op,',');
 
-		    int y=i/4;
-		    int x=i%4;
+		    // int y=i/4;
+		    // int x=i%4;
 
-		    std::cout << "T=" << t << ",Y=" << y << ",X=" << x << "," << op << "\n";
+				int assign_loc = phyloc_y.find_first_of("=");
+				int x = atoi(phyloc_y.substr(assign_loc+1, phyloc_y.size()-(assign_loc)).c_str());
+				assign_loc = phyloc_x.find_first_of("=");
+				int y = atoi(phyloc_x.substr(assign_loc+1, phyloc_x.size()-(assign_loc)).c_str());
+				// std::cout<<"temp_x"<<temp_x;
+				// assert(temp_x == x);
+				// assert(temp_y == y);
+
+		    std::cout<<"phyloc:"<<phyloc_x<<" "<<phyloc_y << " T=" << t << ",Y=" << y << ",X=" << x << "," << op << "\n";
 
 		    HyIns currIns;
 		    if(atoi(op.substr(0,1).c_str())==1){

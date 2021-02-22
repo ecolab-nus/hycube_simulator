@@ -37,6 +37,11 @@ class CGRA {
 		std::vector<int> InterestedAddrList;
 		XBarInput convertStrtoXBI(std::string str);
 
+
+		int tile_size = 4;
+		int mem_each_tile = 4096;
+		int overall_mem =  16384;
+
 	};
 
 

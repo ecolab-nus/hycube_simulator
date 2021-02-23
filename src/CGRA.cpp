@@ -20,6 +20,8 @@ CGRA::CGRA(int SizeX, int SizeY) {
 	sizeX = SizeX;
 	sizeY = SizeY;
 
+	tile_size =  SizeX * SizeY /16;
+
 	for (int y = 0; y < SizeY; ++y) {
 		for (int x = 0; x < SizeX; ++x) {
 			CGRATiles[y][x] = new CGRATile(x,y,(x==0),&dmem);
@@ -73,7 +75,7 @@ int CGRA::parseCMEM(std::string CMEMFileName) {
 	    int t;
 
 	    iss >> t;
-	    for (int i = 0; i < 16; ++i) {
+	    for (int i = 0; i < 16 * tile_size; ++i) {
 			std::getline(cmemfile,line);
 		    std::istringstream iss(line);
 		    std::string phyloc_x;
@@ -170,7 +172,7 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 	//ignore the first line
 	std::getline(dmemfile,line);
 
-	for (int i = 0; i < 4096; ++i) {
+	for (int i = 0; i < 4096 * tile_size; ++i) {
 		dmem[i]=0;
 	}
 
@@ -190,6 +192,9 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 
 		dmem[(DataType)atoi(addr.c_str())]=atoi(pre.c_str());
 	}
+	for (int i = 4096; i < 4096 * tile_size; ++i) {
+		dmem[i]= dmem[i%4096];
+	}
 }
 
 int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
@@ -204,7 +209,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 	std::getline(dmemfile,line);
 	std::getline(memallocfile,line);
 
-	for (int i = 0; i < 4096; ++i) {
+	for (int i = 0; i < 4096 * tile_size; ++i) {
 		dmem[i]=0;
 	}
 	std::map<std::string, int> spm_base_addr;
@@ -239,13 +244,24 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 		addr = spm_base_addr[var_name]+atoi(offset.c_str());
 
 		//std::cout << addr << "," << pre << "\n";
-		InterestedAddrList.push_back(addr);
+		
+		for (int i = 0; i <tile_size; ++i) {
+			InterestedAddrList.push_back(i * 4096 + addr);
+		}
 
 		dmem[(DataType)addr]=atoi(pre.c_str());
 		dmem_post[(DataType)addr]=atoi(post.c_str());
 	}
-	dmem[4094]=1;
-	InterestedAddrList.push_back(4094);
+
+	for (int i = 4096; i < 4096 * tile_size; ++i) {
+		dmem[i]= dmem[i%4096];
+		dmem_post[i]= dmem_post[i%4096];
+	}
+	for (int i = 0; i <tile_size; ++i) {
+		dmem[i*4096 + 4094]=1;
+		InterestedAddrList.push_back(i*4096 + 4094);
+	}
+	
 //	std::cout << "Data Memory Content\n";
 //	for (int i = 0; i < 4096; ++i) {
 //		std::cout << i << "," << (int)dmem[i] << "\n";

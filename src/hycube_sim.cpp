@@ -22,11 +22,20 @@ int main(int argc, char* argv[]) {
 
 	string cmemfileName(argv[1]);
 	string dmemfileName(argv[2]);
-
-	HyCUBESim::CGRA cgraInstance(4,4);
+	int x_ = 4;
+	int y_ = 4;
+	int memory_size = 4096;
+	if(argc>4){
+		x_ = atoi(argv[4]);
+		y_ = atoi(argv[5]);
+	}
+	if(argc>6){
+		memory_size = atoi(argv[6]);
+	}
+	HyCUBESim::CGRA cgraInstance(x_,y_);
 	cgraInstance.parseCMEM(cmemfileName);
 //	cout << "argc: "<< argc <<"\n";
-	if(argc==4){
+	if(argc>=4){
 		cout << "Parsing data file with base address pointers\n";
 		string memallocfileName(argv[3]);
 		cgraInstance.parseDMEM(dmemfileName,memallocfileName);

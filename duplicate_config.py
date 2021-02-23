@@ -33,11 +33,13 @@ def add_config(configs, x_shift_value, y_shift_value, allo_shift_value):
       
       newline = "Y=" + str( int(x)+x_shift_value)+ " X=" + str( int(y)+y_shift_value)+","
       # this may not be totally right, but should be fine for pedotmeter and gemm
-      if bits[1] == "1" and bits[29:34]=="00001" and const in mem_alloc:
+    
+      if bits[1] == "1" and ((bits[29:34]=="00001" and const in mem_alloc) or const == 4094):
         #configuration valid
         
         print( "const", const)
         new_const =  const + allo_shift_value
+        print( "new_const", new_const)
         binstr  = "{0:b}".format(new_const) 
         complement_len = 27 - len(binstr)
         binstr =  complement_len * "0" +binstr
@@ -50,6 +52,9 @@ def add_config(configs, x_shift_value, y_shift_value, allo_shift_value):
       print()
   return configs
 
+
+
+# duplicate configurations
 configs = [] 
 config_file = open('./pedometer_with_morpher/pedometer_INNERMOST_LN1_PartPred_DFG.xml_DP1_XDim=4_YDim=4_II=7_MTP=1_binary.bin', 'r')
 config_lines  = config_file.readlines() # skip first line
@@ -61,8 +66,15 @@ for line in config_lines:
   if "Y=" in line:
     configs[context_index] += line
 
-configs = add_config(configs, 4 , 0, 0)
-for config in configs:
-  print(config)
+configs = add_config(configs, 4 , 0, 4096)
+# for config in configs:
+#   print(config)
 
 
+dumplicated_config = open("dumplicated_config.bin", "w")
+dumplicated_config.write("NPB,CONSTVALID,CONST,OPCODE,REGWEN,TREGWEN,REGBYPASS,PRED,OP1,OP2,NORTH,WEST,SOUTH,EAST\n")
+for i in range(0,context_index+1):
+  dumplicated_config.write(str(i)+"\n")
+  dumplicated_config.write(configs[i])
+  dumplicated_config.write("\n")
+dumplicated_config.close()

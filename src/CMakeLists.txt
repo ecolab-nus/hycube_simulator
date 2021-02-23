@@ -1,6 +1,6 @@
 FILE(GLOB MyCPPSources *.cpp)
 FILE(GLOB MyHSources *.h)
-
+set(CMAKE_BUILD_TYPE "Debug")
 set(PROJ "hycube_simulator")
 
 find_package(nlohmann_json CONFIG REQUIRED)

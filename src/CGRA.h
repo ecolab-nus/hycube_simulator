@@ -38,9 +38,9 @@ class CGRA {
 		XBarInput convertStrtoXBI(std::string str);
 
 
-		int tile_size = 4;
+		int tile_size = 1;
 		int mem_each_tile = 4096;
-		int overall_mem =  16384;
+		int overall_mem;
 
 	};
 

@@ -24,7 +24,7 @@ CGRA::CGRA(int SizeX, int SizeY) {
 
 	for (int y = 0; y < SizeY; ++y) {
 		for (int x = 0; x < SizeX; ++x) {
-			CGRATiles[y][x] = new CGRATile(x,y,(x==0),&dmem);
+			CGRATiles[y][x] = new CGRATile(x,y,(x==7 || x==0),&dmem);
 		}
 	}
 

@@ -49,6 +49,10 @@ int main(int argc, char* argv[]) {
 		cgraInstance.executeCycle(count);
 		count++;
 	}
+	for(int i = 0; i<15; i++){
+		cgraInstance.executeCycle(count);
+		count++;
+	}
 	cgraInstance.printInterestedAddrOutcome();
 
 

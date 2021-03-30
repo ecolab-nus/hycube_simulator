@@ -11,13 +11,14 @@
 #include "data_structures.h"
 #include "CGRATile.h"
 #include <fstream>
-
+#include <iostream>
+#include <fstream>
 namespace HyCUBESim {
 
 class CGRA {
 
 	public:
-		CGRA(int SizeX, int SizeY);
+		CGRA(int SizeX, int SizeY, int Mem_each_tile);
 		std::map<int,std::map<int,CGRATile*> > CGRATiles;
 
 		int parseCMEM(std::string CMEMFileName);
@@ -25,9 +26,11 @@ class CGRA {
 		int parseDMEM(std::string DMEMFileName,std::string memallocFileName);
 		int executeCycle(int kII);
 
+
 		std::map<DataType,uint8_t> dmem;
 		std::map<DataType,uint8_t> dmem_post;
 		void printInterestedAddrOutcome();
+		void dumpRawData();
 
 
 	private:

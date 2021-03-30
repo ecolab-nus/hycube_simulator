@@ -3,7 +3,8 @@ import os
 # cgra tile
 # 1 2
 # 3 4 
-# tile1_x = lambda x,y: 
+# tile1_x = lambda x,y:
+mem_each_tile = 8192 
 mem_alloc = []
 alloc_file = open('../pedometer_with_morpher/loop_pedometer_INNERMOST_LN1_0_mem_alloc.txt', 'r')
 alloc_file.readline()
@@ -66,9 +67,9 @@ for line in config_lines:
   if "Y=" in line:
     configs[context_index] += line
 
-configs = add_config(configs, 0 , 4, 8192, "./pedo_4x4_right.bin")
-configs = add_config(configs, 4 , 0, 4096, "./pedo_4x4_left.bin")
-configs = add_config(configs, 4 , 4, 12288, "./pedo_4x4_right.bin")
+configs = add_config(configs, 0 , 4, mem_each_tile * 2, "./pedo_4x4_right.bin")
+configs = add_config(configs, 4 , 0, mem_each_tile, "./pedo_4x4_left.bin")
+configs = add_config(configs, 4 , 4, mem_each_tile * 3, "./pedo_4x4_right.bin")
 
 
 # for config in configs:

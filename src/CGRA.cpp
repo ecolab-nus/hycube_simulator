@@ -15,11 +15,11 @@
 
 namespace HyCUBESim {
 
-CGRA::CGRA(int SizeX, int SizeY) {
+CGRA::CGRA(int SizeX, int SizeY , int Mem_each_tile) {
 	// TODO Auto-generated constructor stub
 	sizeX = SizeX;
 	sizeY = SizeY;
-
+	mem_each_tile = Mem_each_tile;
 	tile_size =  SizeX * SizeY /16;
 
 	for (int y = 0; y < SizeY; ++y) {
@@ -172,7 +172,7 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 	//ignore the first line
 	std::getline(dmemfile,line);
 
-	for (int i = 0; i < 4096 * tile_size; ++i) {
+	for (int i = 0; i < mem_each_tile * tile_size; ++i) {
 		dmem[i]=0;
 	}
 
@@ -192,8 +192,8 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 
 		dmem[(DataType)atoi(addr.c_str())]=atoi(pre.c_str());
 	}
-	for (int i = 4096; i < 4096 * tile_size; ++i) {
-		dmem[i]= dmem[i%4096];
+	for (int i = mem_each_tile; i < mem_each_tile * tile_size; ++i) {
+		dmem[i]= dmem[i%mem_each_tile];
 	}
 }
 
@@ -209,7 +209,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 	std::getline(dmemfile,line);
 	std::getline(memallocfile,line);
 
-	for (int i = 0; i < 4096 * tile_size; ++i) {
+	for (int i = 0; i < mem_each_tile * tile_size; ++i) {
 		dmem[i]=0;
 	}
 	std::map<std::string, int> spm_base_addr;
@@ -246,24 +246,24 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 		//std::cout << addr << "," << pre << "\n";
 		
 		for (int i = 0; i <tile_size; ++i) {
-			InterestedAddrList.push_back(i * 4096 + addr);
+			InterestedAddrList.push_back(i * mem_each_tile + addr);
 		}
 
 		dmem[(DataType)addr]=atoi(pre.c_str());
 		dmem_post[(DataType)addr]=atoi(post.c_str());
 	}
 
-	for (int i = 4096; i < 4096 * tile_size; ++i) {
-		dmem[i]= dmem[i%4096];
-		dmem_post[i]= dmem_post[i%4096];
+	for (int i = mem_each_tile; i < mem_each_tile * tile_size; ++i) {
+		dmem[i]= dmem[i%mem_each_tile];
+		dmem_post[i]= dmem_post[i%mem_each_tile];
 	}
 	for (int i = 0; i <tile_size; ++i) {
-		dmem[i*4096 + 4094]=1;
-		InterestedAddrList.push_back(i*4096 + 4094);
+		dmem[i*mem_each_tile + mem_each_tile -2 ]=1;
+		InterestedAddrList.push_back(i*mem_each_tile + mem_each_tile -2 );
 	}
 	
 //	std::cout << "Data Memory Content\n";
-//	for (int i = 0; i < 4096; ++i) {
+//	for (int i = 0; i < mem_each_tile; ++i) {
 //		std::cout << i << "," << (int)dmem[i] << "\n";
 //	}
 }
@@ -281,6 +281,17 @@ int CGRA::executeCycle(int kII) {
 			CGRATiles[y][x]->updatePC();
 		}
 	}
+}
+void CGRA::dumpRawData(){
+	std::ofstream myfile;
+  myfile.open ("dumped_raw_data.txt");
+ 
+ 
+	int overall = mem_each_tile * tile_size;
+		for(int addr  = 0; addr < overall; addr ++){
+		myfile<< addr << "," << (int)dmem[addr] << "\n";
+	}
+	 myfile.close();
 }
 
 void CGRA::printInterestedAddrOutcome() {

@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 	cgraInstance.printInterestedAddrOutcome();
 
 	int count=0;
-	while(cgraInstance.dmem[memory_tile_size/2-1]==0){
+	while(cgraInstance.dmem[2047]==0){
 		cgraInstance.executeCycle(count);
 		count++;
 	}

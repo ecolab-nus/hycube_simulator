@@ -258,8 +258,8 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 		dmem_post[i]= dmem_post[i%mem_each_tile];
 	}
 	for (int i = 0; i <tile_size; ++i) {
-		dmem[i*mem_each_tile + mem_each_tile -2 ]=1;
-		InterestedAddrList.push_back(i*mem_each_tile + mem_each_tile -2 );
+		dmem[i*mem_each_tile + mem_each_tile -3 ]=1;
+		InterestedAddrList.push_back(i*mem_each_tile + mem_each_tile -3 );
 	}
 	
 //	std::cout << "Data Memory Content\n";

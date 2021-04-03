@@ -4,7 +4,7 @@ import os
 # 1 2
 # 3 4 
 # tile1_x = lambda x,y:
-mem_each_tile = 8192 
+mem_each_tile = 32768 
 mem_alloc = []
 alloc_file = open('../pedometer_with_morpher/loop_pedometer_INNERMOST_LN1_0_mem_alloc.txt', 'r')
 alloc_file.readline()
@@ -39,7 +39,10 @@ def add_config(configs, x_shift_value, y_shift_value, allo_shift_value, file_nam
         #configuration valid
         
         print( "const", const)
-        new_const =  const + allo_shift_value
+        if const == 4094: 
+          new_const =  (allo_shift_value + 1 )  * mem_each_tile + - 3
+        else:
+          new_const =   (allo_shift_value  )  * mem_each_tile + const # for 16 bit
         print( "new_const", new_const)
         binstr  = "{0:b}".format(new_const) 
         complement_len = 27 - len(binstr)
@@ -67,9 +70,9 @@ for line in config_lines:
   if "Y=" in line:
     configs[context_index] += line
 
-configs = add_config(configs, 0 , 4, mem_each_tile * 2, "./pedo_4x4_right.bin")
-configs = add_config(configs, 4 , 0, mem_each_tile, "./pedo_4x4_left.bin")
-configs = add_config(configs, 4 , 4, mem_each_tile * 3, "./pedo_4x4_right.bin")
+configs = add_config(configs, 0 , 4,  2, "./pedo_4x4_right.bin")
+configs = add_config(configs, 4 , 0, 1, "./pedo_4x4_left.bin")
+configs = add_config(configs, 4 , 4,  3, "./pedo_4x4_right.bin")
 
 
 # for config in configs:

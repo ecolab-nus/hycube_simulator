@@ -4,9 +4,9 @@ import os
 # 1 2
 # 3 4 
 # tile1_x = lambda x,y:
-mem_each_tile = 32768 
+mem_each_tile = 16384 
 mem_alloc = []
-alloc_file = open('../pedometer_with_morpher/loop_pedometer_INNERMOST_LN1_0_mem_alloc.txt', 'r')
+alloc_file = open('../pedo_8x8/loop_pedometer_INNERMOST_LN1_0_mem_alloc.txt', 'r')
 alloc_file.readline()
 line = alloc_file.readline()
 while line:
@@ -35,12 +35,16 @@ def add_config(configs, x_shift_value, y_shift_value, allo_shift_value, file_nam
       newline = "Y=" + str( int(x)+x_shift_value)+ " X=" + str( int(y)+y_shift_value)+","
       # this may not be totally right, but should be fine for pedotmeter and gemm
     
-      if bits[1] == "1" and ((bits[29:34]=="00001" and const in mem_alloc) or const == 4094):
+      # loop start address change
+      if bits[1] == "1" and ((bits[29:34]=="00001" and const in mem_alloc) or const == 16383 or const == 16382):
         #configuration valid
         
+        #loop start: 16383 loop end:16382
         print( "const", const)
-        if const == 4094: 
-          new_const =  (allo_shift_value + 1 )  * mem_each_tile + - 3
+        if const == 16383: 
+          new_const =  (allo_shift_value + 1 )  * mem_each_tile + - 1
+        elif const == 16382:
+          new_const =  (allo_shift_value + 1 )  * mem_each_tile + - 2
         else:
           new_const =   (allo_shift_value  )  * mem_each_tile + const # for 16 bit
         print( "new_const", new_const)

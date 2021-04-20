@@ -40,6 +40,11 @@ int main(int argc, char* argv[]) {
 		cgraInstance.executeCycle(count);
 		count++;
 	}
+	//20 cycles for epilogue
+	for(int i = 0; i < 20;i++){
+		cgraInstance.executeCycle(count);
+		count++;
+	}
 	cgraInstance.printInterestedAddrOutcome();
 
 

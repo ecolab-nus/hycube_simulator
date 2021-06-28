@@ -1,22 +1,35 @@
-# python3 skipdata.py  --cubedata {data_file}.txt
-# convert the 32bit memory trace file to 16 bit traces by removing the two MSB bytes
+# python3 automate.py --cubeins {file_from_mapper}.bin --cubedata {data_file}.txt --cubetime {II+1} --cubeclus {no_clusters}
+
 import re
 import collections
 import subprocess
 import sys
 import argparse
 
+## PYTHON FILE with constants
+#import hycube_config as HY
 
 parser = argparse.ArgumentParser()
 
-
+#parser.add_argument("--cubeins", required=True,help="Filename of the addresses for instructions --cubeins <test4.trc>")
 parser.add_argument("--cubedata", required=True,help="Filename of the addresses for data --cubedata <loop_LN121_0.txt>")
+#parser.add_argument("--cubetime", required=True,help="Filename of the addresses for instructions --cubetime <6>")
+#parser.add_argument("--cubeclus", required=True,help="How many clusters needs to be on --cubeclus <2>")
 args = parser.parse_args()
 
-
+#ins_inp  =  str(args.cubeins)
 data_inp =  str(args.cubedata)
+#TIMEEXEC = int(args.cubetime)
+#no_clusters_on = int(args.cubeclus)
+
+#cm_addr_file = open("./mem_files/addr_ins.trc","w+")
+#dm_addr_file = open("./mem_files/addr_data_skip.trc","w+")
 dm_data_file = open("data_modi.txt","w+")
+#results_expected_file = open("results_expected.trc", "w+")
 dm_src_read_file = open(data_inp,"r")
+
+#if(HY.WRITE_DM):
+#addr_mem_type = HY.ADDR_MEM_TYPE_ENCODING["DM"]
 
 dataToWrite = {}
 dataVal = {}
@@ -41,6 +54,9 @@ for idx,line in enumerate(lines):
 for line in lines_n:
    # print(line)
    dm_data_file.write(line + "\n")
+
+dm_data_file.write("loopstart,0,1,0" + "\n")
+dm_data_file.write("loopend,0,0,1" + "\n")
 ##########################################################################
 dm_data_file.close()
 

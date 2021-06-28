@@ -10,7 +10,7 @@
 
 #include "data_structures.h"
 #include "opcodes.h"
-
+#define ARCHI_16BIT
 namespace HyCUBESim {
 
 	class CGRATile {

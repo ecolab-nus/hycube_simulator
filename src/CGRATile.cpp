@@ -221,7 +221,11 @@ namespace HyCUBESim {
 				break;
 			case LOAD :
 				std::cout << ": LOAD," << operand1 << "," << operand2 << "\n";
+#ifdef ARCHI_16BIT
+				ALUTempOut = load(operand2,2);
+#else
 				ALUTempOut = load(operand2,4);
+#endif
 				break;
 			case LOADH :
 				std::cout << ": LOADH," << operand1 << "," << operand2 << "\n";
@@ -236,7 +240,11 @@ namespace HyCUBESim {
 				if(!Pisvalid || predicate){
 					//only store after checking predicate
 					//other operations dont care as the output is not routed.
+#ifdef ARCHI_16BIT
+					ALUTempOut = store(operand1,operand2,2);
+#else
 					ALUTempOut = store(operand1,operand2,4);
+#endif
 				}
 				break;
 			case STOREH :

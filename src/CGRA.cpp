@@ -251,14 +251,16 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 
 		dmem[(DataType)addr]=atoi(pre.c_str());
 		dmem_post[(DataType)addr]=atoi(post.c_str());
+		dmem_pre[(DataType)addr]=atoi(pre.c_str());
 	}
 
 	for (int i = mem_each_tile; i < mem_each_tile * tile_size; ++i) {
 		dmem[i]= dmem[i%mem_each_tile];
 		dmem_post[i]= dmem_post[i%mem_each_tile];
+		dmem_pre[i]= dmem_pre[i%mem_each_tile];
 	}
 	for (int i = 0; i <tile_size; ++i) {
-		dmem[i*mem_each_tile + mem_each_tile -3 ]=1;
+		//dmem[i*mem_each_tile + mem_each_tile -3 ]=1;
 		InterestedAddrList.push_back(i*mem_each_tile + mem_each_tile -3 );
 	}
 	
@@ -267,6 +269,73 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 //		std::cout << i << "," << (int)dmem[i] << "\n";
 //	}
 }
+
+int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int clusterID,int memory_tile_size) {
+
+	std::ifstream dmemfile(DMEMFileName.c_str());
+	std::ifstream memallocfile(memallocFileName.c_str());
+	std::string line;
+
+	assert(dmemfile.is_open() && 'Error opening dmem file');
+	assert(memallocfile.is_open() && 'Error opening memalloc file');
+	std::getline(dmemfile,line);
+	std::getline(memallocfile,line);
+
+	for (int i =memory_tile_size*clusterID ; i < mem_each_tile * tile_size; ++i) {
+		dmem[i]=0;
+	}
+	std::map<std::string, int> spm_base_addr;
+	while(std::getline(memallocfile,line)){
+		std::istringstream iss2(line);
+
+		std::string var_name;
+		std::string base_addr;
+
+		std::getline(iss2,var_name,',');
+		std::getline(iss2,base_addr,',');
+
+
+		spm_base_addr[var_name]= atoi(base_addr.c_str()) + memory_tile_size*clusterID ;
+		std::cout << var_name << "," << spm_base_addr[var_name] << "\n";
+	}
+
+	while(std::getline(dmemfile,line)){
+		std::istringstream iss(line);
+
+		std::string var_name;
+		std::string offset;
+		int addr;
+		std::string pre;
+		std::string post;
+
+		std::getline(iss,var_name,',');
+		std::getline(iss,offset,',');
+		std::getline(iss,pre,',');
+		std::getline(iss,post,',');
+
+		addr = spm_base_addr[var_name]+atoi(offset.c_str());
+
+		//std::cout << addr << "," << pre << "\n";
+		
+		for (int i = 0; i <tile_size; ++i) {
+			InterestedAddrList.push_back(i * mem_each_tile + addr);
+		}
+
+		dmem[(DataType)addr]=atoi(pre.c_str());
+		dmem_post[(DataType)addr]=atoi(post.c_str());
+		dmem_pre[(DataType)addr]=atoi(pre.c_str());
+	}
+
+/*	for (int i = mem_each_tile; i < mem_each_tile * tile_size; ++i) {
+		dmem[i]= dmem[i%mem_each_tile];
+		dmem_post[i]= dmem_post[i%mem_each_tile];
+		dmem_pre[i]= dmem_pre[i%mem_each_tile];
+	}
+	for (int i = 0; i <tile_size; ++i) {
+		InterestedAddrList.push_back(i*mem_each_tile + mem_each_tile -3 );
+	}*/
+}
+
 
 int CGRA::executeCycle(int kII) {
 	for (int y = 0; y < sizeY; ++y) {
@@ -289,7 +358,7 @@ void CGRA::dumpRawData(){
  
 	int overall = mem_each_tile * tile_size;
 		for(int addr  = 0; addr < overall; addr ++){
-		myfile<< addr << "," << (int)dmem[addr] << "\n";
+		myfile<< addr << "," <<(int)dmem_pre[addr] << "," << (int)dmem_post[addr] << "\n";
 	}
 	 myfile.close();
 }

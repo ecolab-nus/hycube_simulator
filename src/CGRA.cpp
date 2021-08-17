@@ -178,7 +178,7 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 	}
 }
 
-int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
+int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int memsize) {
 
 	std::ifstream dmemfile(DMEMFileName.c_str());
 	std::ifstream memallocfile(memallocFileName.c_str());
@@ -190,7 +190,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 	std::getline(dmemfile,line);
 	std::getline(memallocfile,line);
 
-	for (int i = 0; i < 4096; ++i) {
+	for (int i = 0; i < memsize; ++i) {
 		dmem[i]=0;
 	}
 	std::map<std::string, int> spm_base_addr;
@@ -230,8 +230,8 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 		dmem[(DataType)addr]=atoi(pre.c_str());
 		dmem_post[(DataType)addr]=atoi(post.c_str());
 	}
-	dmem[4094]=1;
-	InterestedAddrList.push_back(4094);
+	dmem[memsize-2]=1;//dmem[4094]=1;
+	InterestedAddrList.push_back(memsize-2);//InterestedAddrList.push_back(4094);
 //	std::cout << "Data Memory Content\n";
 //	for (int i = 0; i < 4096; ++i) {
 //		std::cout << i << "," << (int)dmem[i] << "\n";

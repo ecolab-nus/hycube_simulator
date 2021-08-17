@@ -22,7 +22,7 @@ class CGRA {
 
 		int parseCMEM(std::string CMEMFileName);
 		int parseDMEM(std::string DMEMFileName);
-		int parseDMEM(std::string DMEMFileName,std::string memallocFileName);
+		int parseDMEM(std::string DMEMFileName,std::string memallocFileName,int memsize);
 		int executeCycle(int kII);
 
 		std::map<DataType,uint8_t> dmem;

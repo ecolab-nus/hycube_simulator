@@ -14,14 +14,17 @@
 
 namespace HyCUBESim {
 
-CGRA::CGRA(int SizeX, int SizeY) {
+CGRA::CGRA(int SizeX, int SizeY,int type) {
 	// TODO Auto-generated constructor stub
 	sizeX = SizeX;
 	sizeY = SizeY;
 
 	for (int y = 0; y < SizeY; ++y) {
 		for (int x = 0; x < SizeX; ++x) {
-			CGRATiles[y][x] = new CGRATile(x,y,(x==0),&dmem);
+			if(type == 1)
+				CGRATiles[y][x] = new CGRATile(x,y,(x==0),&dmem);
+			else if(type == 2)
+				CGRATiles[y][x] = new CGRATile(x,y,(x==0 or (x==SizeX-1)),&dmem);
 		}
 	}
 
@@ -49,7 +52,7 @@ CGRA::CGRA(int SizeX, int SizeY) {
 
 }
 
-int CGRA::parseCMEM(std::string CMEMFileName) {
+int CGRA::parseCMEM(std::string CMEMFileName,int xdim, int ydim) {
 
 	std::ifstream cmemfile(CMEMFileName.c_str());
 	std::string line;
@@ -72,8 +75,8 @@ int CGRA::parseCMEM(std::string CMEMFileName) {
 	    int t;
 
 	    iss >> t;
-	    for (int i = 0; i < 16; ++i) {
-			std::getline(cmemfile,line);
+	    for (int i = 0; i < xdim*ydim; ++i) {
+		    std::getline(cmemfile,line);
 		    std::istringstream iss(line);
 		    std::string phyloc;
 		    std::string op;
@@ -81,8 +84,8 @@ int CGRA::parseCMEM(std::string CMEMFileName) {
 		    std::getline(iss,phyloc,',');
 		    std::getline(iss,op,',');
 
-		    int y=i/4;
-		    int x=i%4;
+		    int y=i/ydim;
+		    int x=i%xdim;
 
 		    std::cout << "T=" << t << ",Y=" << y << ",X=" << x << "," << op << "\n";
 

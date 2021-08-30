@@ -17,10 +17,10 @@ namespace HyCUBESim {
 class CGRA {
 
 	public:
-		CGRA(int SizeX, int SizeY);
+		CGRA(int SizeX, int SizeY, int type);
 		std::map<int,std::map<int,CGRATile*> > CGRATiles;
 
-		int parseCMEM(std::string CMEMFileName);
+		int parseCMEM(std::string CMEMFileName,int xdim,int ydim);
 		int parseDMEM(std::string DMEMFileName);
 		int parseDMEM(std::string DMEMFileName,std::string memallocFileName,int memsize);
 		int executeCycle(int kII);

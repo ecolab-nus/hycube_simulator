@@ -232,6 +232,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 
 		dmem[(DataType)addr]=atoi(pre.c_str());
 		dmem_post[(DataType)addr]=atoi(post.c_str());
+		dmem_pre[(DataType)addr]=atoi(post.c_str());
 	}
 	dmem[memsize-2]=1;//dmem[4094]=1;
 	InterestedAddrList.push_back(memsize-2);//InterestedAddrList.push_back(4094);
@@ -254,6 +255,18 @@ int CGRA::executeCycle(int kII) {
 			CGRATiles[y][x]->updatePC();
 		}
 	}
+}
+	
+void CGRA::dumpRawData(){
+	std::ofstream myfile;
+ 	myfile.open ("dumped_raw_data.txt");
+ 
+ 
+	int overall = mem_each_tile * tile_size;
+		for(int addr  = 0; addr < overall; addr ++){
+		myfile<< addr << "," <<(int)dmem_pre[addr] << "," << (int)dmem_post[addr] << "\n";
+	}
+	 myfile.close();
 }
 
 void CGRA::printInterestedAddrOutcome() {

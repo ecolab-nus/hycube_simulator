@@ -56,7 +56,7 @@ int CGRA::parseCMEM(std::string CMEMFileName,int xdim, int ydim) {
 
 	std::ifstream cmemfile(CMEMFileName.c_str());
 	std::string line;
-
+	std::cout << CMEMFileName << "\n";
 	assert(cmemfile.is_open() && 'Error opening cmem file');
 
 	//ignoring the first line
@@ -233,8 +233,10 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 		dmem[(DataType)addr]=atoi(pre.c_str());
 		dmem_post[(DataType)addr]=atoi(post.c_str());
 	}
+#ifndef ARCHI_16BIT
 	dmem[memsize-2]=1;//dmem[4094]=1;
 	InterestedAddrList.push_back(memsize-2);//InterestedAddrList.push_back(4094);
+#endif
 //	std::cout << "Data Memory Content\n";
 //	for (int i = 0; i < 4096; ++i) {
 //		std::cout << i << "," << (int)dmem[i] << "\n";

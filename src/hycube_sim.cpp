@@ -13,6 +13,8 @@ using namespace std;
 #include <unistd.h>
 #include <string.h>
 
+//Uncomment this for 16-bit full chip
+//#define ARCHI_16BIT
 struct arguments
 {
 	string cmemfileName;
@@ -112,10 +114,20 @@ int main(int argc, char* argv[]) {
 	cgraInstance.printInterestedAddrOutcome();
 
 	int count=0;
+#ifdef ARCHI_16BIT
+	cout << "XXX->" << cgraInstance.dmem[MEM_SIZE-2] << " " << MEM_SIZE-2 << "\n";
+	while(cgraInstance.dmem[MEM_SIZE-2]==0){ 
+		cout << "XXX->" << cgraInstance.dmem[MEM_SIZE-2] << "\n";
+		cgraInstance.executeCycle(count);
+		count++;
+	}
+#else
 	while(cgraInstance.dmem[MEM_SIZE/2-1]==0){
 		cgraInstance.executeCycle(count);
 		count++;
 	}
+
+#endif
 	//20 cycles for epilogue
 	for(int i = 0; i < 20;i++){
 		cgraInstance.executeCycle(count);

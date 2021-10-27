@@ -12,6 +12,10 @@
 #include "CGRATile.h"
 #include <fstream>
 
+
+//Uncomment this for 16-bit full chip
+//#define ARCHI_16BIT
+
 namespace HyCUBESim {
 
 class CGRA {

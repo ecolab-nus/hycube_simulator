@@ -31,7 +31,9 @@ class CGRA {
 
 		std::map<DataType,uint8_t> dmem;
 		std::map<DataType,uint8_t> dmem_post;
+		std::map<DataType,uint8_t> dmem_pre;
 		void printInterestedAddrOutcome();
+		void dumpRawData();
 
 
 	private:

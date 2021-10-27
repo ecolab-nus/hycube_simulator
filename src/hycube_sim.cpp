@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
 	}else{
 		cgraInstance.parseDMEM(dmemfileName);
 	}
-	cgraInstance.dumpRawData();
+        cgraInstance.dumpRawData();
 	cgraInstance.printInterestedAddrOutcome();
 
 	int count=0;

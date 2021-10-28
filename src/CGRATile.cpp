@@ -934,7 +934,9 @@ namespace HyCUBESim {
 			(*dmemPtr)[op2] = stdata;
 		}
 		else if(size == 2){
+#ifndef ARCHI_16BIT
 			assert( (op1 & 0xffff0000) == 0);
+#endif
 			assert(op2 % 2 == 0);
 			uint8_t stdata0 = op1 & 0x000000ff;
 			uint8_t stdata1 = (op1 & 0x0000ff00) >> 8;

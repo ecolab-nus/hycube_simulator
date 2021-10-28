@@ -352,15 +352,21 @@ int CGRA::executeCycle(int kII) {
 	}
 }
 void CGRA::dumpRawData(){
-	std::ofstream myfile;
+	std::ofstream myfile,myfile_int;
   myfile.open ("dumped_raw_data.txt");
- 
- 
+  myfile_int.open ("dumped_raw_data_interested.txt");
+  
 	int overall = mem_each_tile * tile_size;
-		for(int addr  = 0; addr < overall; addr ++){
+	for(int addr  = 0; addr < overall; addr ++){
 		myfile<< addr << "," <<(int)dmem_pre[addr] << "," << (int)dmem_post[addr] << "\n";
 	}
+
+	for(int addr  = 0; addr < InterestedAddrList.size(); addr ++){
+		myfile_int<< InterestedAddrList[addr] << "," <<(int)dmem_pre[InterestedAddrList[addr]] << "," << (int)dmem_post[InterestedAddrList[addr]] << "\n";
+	}
+
 	 myfile.close();
+	 myfile_int.close();
 }
 
 void CGRA::printInterestedAddrOutcome() {

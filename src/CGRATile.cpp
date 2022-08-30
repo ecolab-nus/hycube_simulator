@@ -30,14 +30,14 @@ namespace HyCUBESim {
 	}
 
 	void CGRATile::execute(int kII) {
-		std::cout << "---------------execute new instruction ----------------------------\n";
-		std::cout << "current PC = " << PC << ",LER=" << LER << ",LSR=" << LSR << "\n";
-		std::cout << "kII =" << kII << ",PC =" << PC << ",y=" << Y << ",x=" << X << "\n";
-		std::cout << "RegInfo ::\n";
+		LOG(SIMULATOR) << "---------------execute new instruction ----------------------------\n";
+		LOG(SIMULATOR) << "current PC = " << PC << ",LER=" << LER << ",LSR=" << LSR << "\n";
+		LOG(SIMULATOR) << "kII =" << kII << ",PC =" << PC << ",y=" << Y << ",x=" << X << "\n";
+		LOG(SIMULATOR) << "RegInfo ::\n";
 		this->printRegisterInfo();
 
 		HyIns currIns = configMem[PC];
-		std::cout << "currIns ::\n";
+		LOG(SIMULATOR) << "currIns ::\n";
 		printIns(currIns);
 		DataType result;
 
@@ -47,7 +47,7 @@ namespace HyCUBESim {
 
 		if(prevIns.xB.P != INV){
 			if(P.empty()) {
-				std::cout << "expected Predicate is not there!\n";
+				LOG(SIMULATOR) << "expected Predicate is not there!\n";
 				executeFinish(currIns,false,0);
 				return;
 			}
@@ -70,7 +70,7 @@ namespace HyCUBESim {
 
 		if(prevIns.xB.I1 != INV){
 			if(I1.empty() && (currIns.opcode!=SELECT)){
-				std::cout << "expected I1 is not there!\n";
+				LOG(SIMULATOR) << "expected I1 is not there!\n";
 				executeFinish(currIns,false,0);
 				return;
 			}
@@ -95,7 +95,7 @@ namespace HyCUBESim {
 		else{
 			if(prevIns.xB.I2 != INV){
 				if(I2.empty() && (currIns.opcode!=SELECT)) {
-					std::cout << "expected I2 is not there!\n";
+					LOG(SIMULATOR) << "expected I2 is not there!\n";
 					executeFinish(currIns,false,0);
 					return;
 				}
@@ -120,51 +120,51 @@ namespace HyCUBESim {
 			case NOP:
 				break;
 			case ADD :
-				std::cout << ": ADD," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": ADD," << operand1 << "," << operand2 << "\n";
 				ALUTempOut =  operand1 + operand2;
 				break;
 			case SUB :
-				std::cout << ": SUB," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": SUB," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 - operand2;
 				break;
 			case MUL :
-				std::cout << ": MUL," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": MUL," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 * operand2;
 				break;
 			case SEXT :
-				std::cout << ": SEXT," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": SEXT," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = sext(operand1,operand2);
 				break;
 			case DIV :
-				std::cout << ": DIV," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": DIV," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 / operand2;
 				break;
 			case LS :
-				std::cout << ": LS," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": LS," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 << operand2;
 				break;
 			case RS :
-				std::cout << ": RS," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": RS," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 >> operand2;
 				break;
 			case ARS :
-				std::cout << ": ARS," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": ARS," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = ars(operand1,operand2);
 				break;
 			case AND :
-				std::cout << ": AND," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": AND," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 & operand2;
 				break;
 			case OR :
-				std::cout << ": OR," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": OR," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 | operand2;
 				break;
 			case XOR :
-				std::cout << ": XOR," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": XOR," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 ^ operand2;
 				break;
 			case SELECT :
-				std::cout << ": SELECT," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": SELECT," << operand1 << "," << operand2 << "\n";
 				assert(!(I1isvalid && I2isvalid));
 				if(I1isvalid){
 					ALUTempOut=operand1;
@@ -173,14 +173,14 @@ namespace HyCUBESim {
 					ALUTempOut=operand2;
 				}
 				else{
-					std::cout << "expected I2 or I1 is not there!\n";
+					LOG(SIMULATOR) << "expected I2 or I1 is not there!\n";
 					executeFinish(currIns,false,0);
 					return;
 				}
 //				ALUTempOut = I1isvalid ? operand1 : operand2;
 				break;
 			case CMERGE :
-				std::cout << ": CMERGE," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": CMERGE," << operand1 << "," << operand2 << "\n";
 				//dmd ALUTempOut = operand1;
 				//dmd:
 				if(I2isvalid){
@@ -191,15 +191,15 @@ namespace HyCUBESim {
 				}
 				break;
 			case CMP :
-				std::cout << ": CMP," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": CMP," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 == operand2;
 				break;
 			case CLT :
-				std::cout << ": CLT," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": CLT," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 < operand2;
 				break;
 			case BR :
-				std::cout << ": BR," << predicate << "," << I1isvalid << "," << I2isvalid << "\n";
+				LOG(SIMULATOR) << ": BR," << predicate << "," << I1isvalid << "," << I2isvalid << "\n";
 				if((predicate)||(I1isvalid)||(I2isvalid)){
 					ALUTempOut = 1;
 				}
@@ -208,19 +208,19 @@ namespace HyCUBESim {
 				}
 				break;
 			case CGT :
-				std::cout << ": CGT," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": CGT," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 > operand2;
 				break;
 			case LOADCL :
-				std::cout << ": LOADCL," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": LOADCL," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = loadcl(operand1,operand2);
 				break;
 			case MOVCL :
-				std::cout << ": MOVCL," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": MOVCL," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = movcl(operand1,operand2);
 				break;
 			case LOAD :
-				std::cout << ": LOAD," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": LOAD," << operand1 << "," << operand2 << "\n";
 #ifdef ARCHI_16BIT
 				ALUTempOut = load(operand2,2);
 #else
@@ -228,15 +228,15 @@ namespace HyCUBESim {
 #endif
 				break;
 			case LOADH :
-				std::cout << ": LOADH," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": LOADH," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = load(operand2,2);
 				break;
 			case LOADB :
-				std::cout << ": LOADB," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": LOADB," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = load(operand2,1);
 				break;
 			case STORE :
-				std::cout << ": STORE," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": STORE," << operand1 << "," << operand2 << "\n";
 				if(!Pisvalid || predicate){
 					//only store after checking predicate
 					//other operations dont care as the output is not routed.
@@ -248,7 +248,7 @@ namespace HyCUBESim {
 				}
 				break;
 			case STOREH :
-				std::cout << ": STOREH," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": STOREH," << operand1 << "," << operand2 << "\n";
 				if(!Pisvalid || predicate){
 					//only store after checking predicate
 					//other operations dont care as the output is not routed.
@@ -256,7 +256,7 @@ namespace HyCUBESim {
 				}
 				break;
 			case STOREB :
-				std::cout << ": STOREB," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": STOREB," << operand1 << "," << operand2 << "\n";
 				if(!Pisvalid || predicate){
 					//only store after checking predicate
 					//other operations dont care as the output is not routed.
@@ -264,26 +264,26 @@ namespace HyCUBESim {
 				}
 				break;
 			case JUMPL :
-				std::cout << ": JUMPL," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": JUMPL," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = jumpl(operand2);
 				executeFinish(currIns,false,0);
 				return;
 				break;
 			case MOVC :
-				std::cout << ": MOVC," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": MOVC," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand2;
 				break;
 			default :
-				std::cout << "unknown opcode = " << currIns.opcode << "\n";
+				LOG(SIMULATOR) << "unknown opcode = " << currIns.opcode << "\n";
 				assert(false);
-				std::cout << ": ????," << operand1 << "," << operand2 << "\n";
+				LOG(SIMULATOR) << ": ????," << operand1 << "," << operand2 << "\n";
 				break;
 		}
-		std::cout << "OUTPUT=" << ALUTempOut << "\n";
+		LOG(SIMULATOR) << "OUTPUT=" << ALUTempOut << "\n";
 
 		//stop exeuction after poping the queues.
 		if(!predicate && Pisvalid){
-			std::cout << "Predicate is not valid!\n";
+			LOG(SIMULATOR) << "Predicate is not valid!\n";
 			executeFinish(currIns,false,0);
 			return;
 		}
@@ -501,7 +501,7 @@ namespace HyCUBESim {
 			case RES_I:
 //				if(!RES.empty()){
 //					assert(RES.size()==1);
-//					std::cout << "Pushed I1\n";
+//					LOG(SIMULATOR) << "Pushed I1\n";
 //					I1.push(RES.front());
 //					RES.pop();
 //				}
@@ -514,7 +514,7 @@ namespace HyCUBESim {
 			case ALU_I:
 //				if(!ALU_O.empty()){
 //					assert(ALU_O.size()==1);
-//					std::cout << "Pushed I1\n";
+//					LOG(SIMULATOR) << "Pushed I1\n";
 //					I1.push(ALU_O.front());
 //					ALU_O.pop();
 //				}
@@ -704,13 +704,13 @@ namespace HyCUBESim {
 	}
 
 	bool CGRATile::passData(Dir incomingDir,  std::pair<bool,DataType> val) {
-		std::cout << "passData :: PC=" << PC << ",Y=" << Y << ",X=" << X << "\n";
+		LOG(SIMULATOR) << "passData :: PC=" << PC << ",Y=" << Y << ",X=" << X << "\n";
 
 		if(val.first){
-			std::cout << "Incoming Dir : " << str(incomingDir) << ",val = " << val.second;
+			LOG(SIMULATOR) << "Incoming Dir : " << str(incomingDir) << ",val = " << val.second;
 		}
 		else{
-			std::cout << "Incoming Dir : " << str(incomingDir) << ",val = " << "INV";
+			LOG(SIMULATOR) << "Incoming Dir : " << str(incomingDir) << ",val = " << "INV";
 		}
 
 
@@ -727,7 +727,7 @@ namespace HyCUBESim {
 				if(currIns.regwen[correspondingReg]==1){
 //					assert(R0.empty());
 //					R0.push(inputs[incomingDir]);
-					std::cout << ",writtenR0";
+					LOG(SIMULATOR) << ",writtenR0";
 //					R0 = inputs[incomingDir];
 					R0_tobewritten = inputs[incomingDir];
 					sinkedtoReg=true;
@@ -739,7 +739,7 @@ namespace HyCUBESim {
 				if(currIns.regwen[correspondingReg]==1){
 //					assert(R1.empty());
 //					R1.push(inputs[incomingDir]);
-					std::cout << ",writtenR1";
+					LOG(SIMULATOR) << ",writtenR1";
 //					R1 = inputs[incomingDir];
 					R1_tobewritten = inputs[incomingDir];
 					sinkedtoReg=true;
@@ -751,7 +751,7 @@ namespace HyCUBESim {
 				if(currIns.regwen[correspondingReg]==1){
 //					assert(R2.empty());
 //					R2.push(inputs[incomingDir]);
-					std::cout << ",writtenR2";
+					LOG(SIMULATOR) << ",writtenR2";
 //					R2 = inputs[incomingDir];
 					R2_tobewritten = inputs[incomingDir];
 					sinkedtoReg=true;
@@ -763,7 +763,7 @@ namespace HyCUBESim {
 				if(currIns.regwen[correspondingReg]==1){
 //					assert(R3.empty());
 //					R3.push(inputs[incomingDir]);
-					std::cout << ",writtenR3";
+					LOG(SIMULATOR) << ",writtenR3";
 //					R3 = inputs[incomingDir];
 					R3_tobewritten = inputs[incomingDir];
 					sinkedtoReg=true;
@@ -793,7 +793,7 @@ namespace HyCUBESim {
 //				assert(P.empty());
 //				P.push(val.second);
 				P_tobewritten = val;
-				std::cout << ",writtenP";
+				LOG(SIMULATOR) << ",writtenP";
 				sinkedtoReg=true;
 			}
 
@@ -806,7 +806,7 @@ namespace HyCUBESim {
 //				assert(I1.empty());
 //				I1.push(val.second);
 				I1_tobewritten = val;
-				std::cout << ",writtenI1";
+				LOG(SIMULATOR) << ",writtenI1";
 				sinkedtoReg=true;
 			}
 		}
@@ -818,7 +818,7 @@ namespace HyCUBESim {
 //				assert(I2.empty());
 //				I2.push(val.second);
 				I2_tobewritten = val;
-				std::cout << ",writtenI2";
+				LOG(SIMULATOR) << ",writtenI2";
 				sinkedtoReg=true;
 			}
 		}
@@ -832,16 +832,16 @@ namespace HyCUBESim {
 			connectedTiles[EAST]->passData(WEST,val);
 		}
 		if(currIns.xB.WEST_O == xbarIncomingDir){
-			std::cout << "[CGRATile.cpp][passData]West passdata\n" ;
+			LOG(SIMULATOR) << "[CGRATile.cpp][passData]West passdata\n" ;
 			connectedTiles[WEST]->passData(EAST,val);
-			std::cout << "[CGRATile.cpp][passData]West passdata done\n" ;
+			LOG(SIMULATOR) << "[CGRATile.cpp][passData]West passdata done\n" ;
 		}
 		if(currIns.xB.SOUTH_O == xbarIncomingDir){
 			connectedTiles[SOUTH]->passData(NORTH,val);
 		}
 
 //		assert(sinkedtoReg);
-		std::cout << "\n";
+		LOG(SIMULATOR) << "\n";
 
 		return true;
 	}
@@ -959,123 +959,123 @@ namespace HyCUBESim {
 	}
 
 void CGRATile::printIns(HyIns ins) {
-	std::cout << "NPB=" << ins.NPB;
+	LOG(SIMULATOR) << "NPB=" << ins.NPB;
 
 	switch(ins.opcode){
 				case NOP:
-					std::cout << ",OP=" << "NOP";
+					LOG(SIMULATOR) << ",OP=" << "NOP";
 					break;
 				case ADD :
-					std::cout << ",OP=" << "ADD";
+					LOG(SIMULATOR) << ",OP=" << "ADD";
 					break;
 				case SUB :
-					std::cout << ",OP=" << "SUB";
+					LOG(SIMULATOR) << ",OP=" << "SUB";
 					break;
 				case MUL :
-					std::cout << ",OP=" << "MUL";
+					LOG(SIMULATOR) << ",OP=" << "MUL";
 					break;
 				case SEXT :
-					std::cout << ",OP=" << "MUL";
+					LOG(SIMULATOR) << ",OP=" << "MUL";
 					break;
 				case DIV :
-					std::cout << ",OP=" << "DIV";
+					LOG(SIMULATOR) << ",OP=" << "DIV";
 					break;
 				case LS :
-					std::cout << ",OP=" << "LS";
+					LOG(SIMULATOR) << ",OP=" << "LS";
 					break;
 				case RS :
-					std::cout << ",OP=" << "RS";
+					LOG(SIMULATOR) << ",OP=" << "RS";
 					break;
 				case ARS :
-					std::cout << ",OP=" << "ARS";
+					LOG(SIMULATOR) << ",OP=" << "ARS";
 					break;
 				case AND :
-					std::cout << ",OP=" << "AND";
+					LOG(SIMULATOR) << ",OP=" << "AND";
 					break;
 				case OR :
-					std::cout << ",OP=" << "OR";
+					LOG(SIMULATOR) << ",OP=" << "OR";
 					break;
 				case XOR :
-					std::cout << ",OP=" << "XOR";
+					LOG(SIMULATOR) << ",OP=" << "XOR";
 					break;
 				case SELECT :
-					std::cout << ",OP=" << "SELECT";
+					LOG(SIMULATOR) << ",OP=" << "SELECT";
 					break;
 				case CMERGE :
-					std::cout << ",OP=" << "CMERGE";
+					LOG(SIMULATOR) << ",OP=" << "CMERGE";
 					break;
 				case CMP :
-					std::cout << ",OP=" << "CMP";
+					LOG(SIMULATOR) << ",OP=" << "CMP";
 					break;
 				case CLT :
-					std::cout << ",OP=" << "CLT";
+					LOG(SIMULATOR) << ",OP=" << "CLT";
 					break;
 				case BR :
-					std::cout << ",OP=" << "BR";
+					LOG(SIMULATOR) << ",OP=" << "BR";
 					break;
 				case CGT :
-					std::cout << ",OP=" << "CGT";
+					LOG(SIMULATOR) << ",OP=" << "CGT";
 					break;
 				case LOADCL :
-					std::cout << ",OP=" << "LOADCL";
+					LOG(SIMULATOR) << ",OP=" << "LOADCL";
 					break;
 				case MOVCL :
-					std::cout << ",OP=" << "MOVCL";
+					LOG(SIMULATOR) << ",OP=" << "MOVCL";
 					break;
 				case LOAD :
-					std::cout << ",OP=" << "LOAD";
+					LOG(SIMULATOR) << ",OP=" << "LOAD";
 					break;
 				case LOADH :
-					std::cout << ",OP=" << "LOADH";
+					LOG(SIMULATOR) << ",OP=" << "LOADH";
 					break;
 				case LOADB :
-					std::cout << ",OP=" << "LOADB";
+					LOG(SIMULATOR) << ",OP=" << "LOADB";
 					break;
 				case STORE :
-					std::cout << ",OP=" << "STORE";
+					LOG(SIMULATOR) << ",OP=" << "STORE";
 					break;
 				case STOREH :
-					std::cout << ",OP=" << "STOREH";
+					LOG(SIMULATOR) << ",OP=" << "STOREH";
 					break;
 				case STOREB :
-					std::cout << ",OP=" << "STOREB";
+					LOG(SIMULATOR) << ",OP=" << "STOREB";
 					break;
 				case JUMPL :
-					std::cout << ",OP=" << "JUMPL";
+					LOG(SIMULATOR) << ",OP=" << "JUMPL";
 					break;
 				case MOVC :
-					std::cout << ",OP=" << "MOVC";
+					LOG(SIMULATOR) << ",OP=" << "MOVC";
 					break;
 				default :
-					std::cout << ",OP=" << "UNKNOWN";
+					LOG(SIMULATOR) << ",OP=" << "UNKNOWN";
 					break;
 			}
 
-			std::cout << ",CONSTVALID=" << ins.constValid;
-			std::cout << ",CONST=" << ins.constant;
-			std::cout << "\n";
-			std::cout << ",BYP_R0=" << (int)ins.regbypass[Reg0];
-			std::cout << ",BYP_R1=" << (int)ins.regbypass[Reg1];
-			std::cout << ",BYP_R2=" << (int)ins.regbypass[Reg2];
-			std::cout << ",BYP_R3=" << (int)ins.regbypass[Reg3];
-			std::cout << "\n";
-			std::cout << ",REN_R0=" << (int)ins.regwen[Reg0];
-			std::cout << ",REN_R1=" << (int)ins.regwen[Reg1];
-			std::cout << ",REN_R2=" << (int)ins.regwen[Reg2];
-			std::cout << ",REN_R3=" << (int)ins.regwen[Reg3];
+			LOG(SIMULATOR) << ",CONSTVALID=" << ins.constValid;
+			LOG(SIMULATOR) << ",CONST=" << ins.constant;
+			LOG(SIMULATOR) << "\n";
+			LOG(SIMULATOR) << ",BYP_R0=" << (int)ins.regbypass[Reg0];
+			LOG(SIMULATOR) << ",BYP_R1=" << (int)ins.regbypass[Reg1];
+			LOG(SIMULATOR) << ",BYP_R2=" << (int)ins.regbypass[Reg2];
+			LOG(SIMULATOR) << ",BYP_R3=" << (int)ins.regbypass[Reg3];
+			LOG(SIMULATOR) << "\n";
+			LOG(SIMULATOR) << ",REN_R0=" << (int)ins.regwen[Reg0];
+			LOG(SIMULATOR) << ",REN_R1=" << (int)ins.regwen[Reg1];
+			LOG(SIMULATOR) << ",REN_R2=" << (int)ins.regwen[Reg2];
+			LOG(SIMULATOR) << ",REN_R3=" << (int)ins.regwen[Reg3];
 
-			std::cout << ",tregwen=" << (int)ins.tregwen;
+			LOG(SIMULATOR) << ",tregwen=" << (int)ins.tregwen;
 
-			std::cout << "\n";
-			std::cout << ",XB_P=" << getNameXBarInput(ins.xB.P);
-			std::cout << ",XB_I1=" << getNameXBarInput(ins.xB.I1);
-			std::cout << ",XB_I2=" << getNameXBarInput(ins.xB.I2);
-			std::cout << ",XB_NORTH=" << getNameXBarInput(ins.xB.NORTH_O);
-			std::cout << ",XB_EAST=" << getNameXBarInput(ins.xB.EAST_O);
-			std::cout << ",XB_WEST=" << getNameXBarInput(ins.xB.WEST_O);
-			std::cout << ",XB_SOUTH=" << getNameXBarInput(ins.xB.SOUTH_O);
+			LOG(SIMULATOR) << "\n";
+			LOG(SIMULATOR) << ",XB_P=" << getNameXBarInput(ins.xB.P);
+			LOG(SIMULATOR) << ",XB_I1=" << getNameXBarInput(ins.xB.I1);
+			LOG(SIMULATOR) << ",XB_I2=" << getNameXBarInput(ins.xB.I2);
+			LOG(SIMULATOR) << ",XB_NORTH=" << getNameXBarInput(ins.xB.NORTH_O);
+			LOG(SIMULATOR) << ",XB_EAST=" << getNameXBarInput(ins.xB.EAST_O);
+			LOG(SIMULATOR) << ",XB_WEST=" << getNameXBarInput(ins.xB.WEST_O);
+			LOG(SIMULATOR) << ",XB_SOUTH=" << getNameXBarInput(ins.xB.SOUTH_O);
 
-			std::cout << "\n**print ins end**\n";
+			LOG(SIMULATOR) << "\n**print ins end**\n";
 }
 
 std::string CGRATile::getNameXBarInput(XBarInput xinp) {
@@ -1178,62 +1178,62 @@ std::string CGRATile::str(Regs reg) {
 
 void CGRATile::printRegisterInfo() {
 	if(!P.empty()){
-		std::cout << "P=" << P.front();
+		LOG(SIMULATOR) << "P=" << P.front();
 	}
 	else{
-		std::cout << "P=INV";
+		LOG(SIMULATOR) << "P=INV";
 	}
 
 	if(!I1.empty()){
-		std::cout << ",I1=" << I1.front();
+		LOG(SIMULATOR) << ",I1=" << I1.front();
 	}
 	else{
-		std::cout << ",I1=INV";
+		LOG(SIMULATOR) << ",I1=INV";
 	}
 
 	if(!I2.empty()){
-		std::cout << ",I2=" << I2.front();
+		LOG(SIMULATOR) << ",I2=" << I2.front();
 	}
 	else{
-		std::cout << ",I2=INV";
+		LOG(SIMULATOR) << ",I2=INV";
 	}
 
 
 	if(R0.first){
-		std::cout << ",R0=" << R0.second;
+		LOG(SIMULATOR) << ",R0=" << R0.second;
 	}
 	else{
-		std::cout << ",R0=INV";
+		LOG(SIMULATOR) << ",R0=INV";
 	}
 
 	if(R1.first){
-		std::cout << ",R1=" << R1.second;
+		LOG(SIMULATOR) << ",R1=" << R1.second;
 	}
 	else{
-		std::cout << ",R1=INV";
+		LOG(SIMULATOR) << ",R1=INV";
 	}
 
 	if(R2.first){
-		std::cout << ",R2=" << R2.second;
+		LOG(SIMULATOR) << ",R2=" << R2.second;
 	}
 	else{
-		std::cout << ",R2=INV";
+		LOG(SIMULATOR) << ",R2=INV";
 	}
 
 	if(R3.first){
-		std::cout << ",R3=" << R3.second;
+		LOG(SIMULATOR) << ",R3=" << R3.second;
 	}
 	else{
-		std::cout << ",R3=INV";
+		LOG(SIMULATOR) << ",R3=INV";
 	}
 
 	if(RES.first){
-		std::cout << ",RES=" << RES.second;
+		LOG(SIMULATOR) << ",RES=" << RES.second;
 	}
 	else{
-		std::cout << ",RES=INV";
+		LOG(SIMULATOR) << ",RES=INV";
 	}
-	std::cout << "\n";
+	LOG(SIMULATOR) << "\n";
 }
 
 
@@ -1253,7 +1253,7 @@ void CGRATile::printRegisterInfo() {
 		LER = (op2 >> 5) & 0b11111;
 		PC = (op2 >> 10) & 0b11111;
 
-		std::cout << ": JUMPL,LSR=" << LSR << ",LER=" << LER << ",PC=" << PC << "\n";
+		LOG(SIMULATOR) << ": JUMPL,LSR=" << LSR << ",LER=" << LER << ",PC=" << PC << "\n";
 
 		assert(LSR < 32);
 		assert(LER < 32);

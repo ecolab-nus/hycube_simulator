@@ -10,6 +10,7 @@
 
 #include "data_structures.h"
 #include "opcodes.h"
+#include "debug.h"
 
 //Uncomment this for 16-bit full chip
 //#define ARCHI_16BIT

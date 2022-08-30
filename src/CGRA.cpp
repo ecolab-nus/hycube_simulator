@@ -56,7 +56,7 @@ int CGRA::parseCMEM(std::string CMEMFileName,int xdim, int ydim) {
 
 	std::ifstream cmemfile(CMEMFileName.c_str());
 	std::string line;
-	std::cout << CMEMFileName << "\n";
+	LOG(SIMULATOR) << CMEMFileName << "\n";
 	assert(cmemfile.is_open() && 'Error opening cmem file');
 
 	//ignoring the first line
@@ -87,7 +87,7 @@ int CGRA::parseCMEM(std::string CMEMFileName,int xdim, int ydim) {
 		    int y=i/ydim;
 		    int x=i%xdim;
 
-		    std::cout << "T=" << t << ",Y=" << y << ",X=" << x << "," << op << "\n";
+		    LOG(SIMULATOR) << "T=" << t << ",Y=" << y << ",X=" << x << "," << op << "\n";
 
 		    HyIns currIns;
 		    if(atoi(op.substr(0,1).c_str())==1){
@@ -124,8 +124,8 @@ int CGRA::parseCMEM(std::string CMEMFileName,int xdim, int ydim) {
 		    currIns.regbypass[Reg2] = std::stoi(op.substr(41,1),nullptr,2);
 		    currIns.regbypass[Reg1] = std::stoi(op.substr(42,1),nullptr,2);
 
-		    std::cout << "XbConfig : " << op.substr(43,21) << "\n";
-		    std::cout << "xB.I2 : " << op.substr(49,3) << "\n";
+		    LOG(SIMULATOR) << "XbConfig : " << op.substr(43,21) << "\n";
+		    LOG(SIMULATOR) << "xB.I2 : " << op.substr(49,3) << "\n";
 
 		    currIns.xB.P = convertStrtoXBI(op.substr(43,3));
 
@@ -174,7 +174,7 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 		std::getline(iss,pre,',');
 		std::getline(iss,post,',');
 
-		std::cout << addr << "," << pre << "\n";
+		LOG(SIMULATOR) << addr << "," << pre << "\n";
 		InterestedAddrList.push_back(atoi(addr.c_str()));
 
 		dmem[(DataType)atoi(addr.c_str())]=atoi(pre.c_str());
@@ -208,7 +208,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 
 
 		spm_base_addr[var_name]= atoi(base_addr.c_str());
-		std::cout << var_name << "," << spm_base_addr[var_name] << "\n";
+		LOG(SIMULATOR) << var_name << "," << spm_base_addr[var_name] << "\n";
 	}
 
 	while(std::getline(dmemfile,line)){
@@ -227,7 +227,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 
 		addr = spm_base_addr[var_name]+atoi(offset.c_str());
 
-		//std::cout << addr << "," << pre << "\n";
+		//LOG(SIMULATOR) << addr << "," << pre << "\n";
 		InterestedAddrList.push_back(addr);
 
 		dmem[(DataType)addr]=atoi(pre.c_str());
@@ -238,9 +238,9 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 	dmem[memsize-2]=1;//dmem[4094]=1;
 	InterestedAddrList.push_back(memsize-2);//InterestedAddrList.push_back(4094);
 #endif
-//	std::cout << "Data Memory Content\n";
+//	LOG(SIMULATOR) << "Data Memory Content\n";
 //	for (int i = 0; i < 4096; ++i) {
-//		std::cout << i << "," << (int)dmem[i] << "\n";
+//		LOG(SIMULATOR) << i << "," << (int)dmem[i] << "\n";
 //	}
 }
 
@@ -272,9 +272,9 @@ void CGRA::dumpRawData(){
 
 
 void CGRA::printInterestedAddrOutcome() {
-	std::cout << "Interested Addresses :: \n";
+	LOG(SIMULATOR) << "Interested Addresses :: \n";
 	for(int addr : InterestedAddrList){
-		std::cout << addr << "," << (int)dmem[addr] << "\n";
+		LOG(SIMULATOR) << addr << "," << (int)dmem[addr] << "\n";
 	}
 	int correct_count = 0;
 	int wrong_count = 0;
@@ -283,15 +283,19 @@ void CGRA::printInterestedAddrOutcome() {
 			correct_count++;
 		}else{
 			wrong_count++;
-			std::cout << "Data mismatch at address: "<< addr << ", result:" << (int)dmem[addr]<<", expected:" << (int)dmem_post[addr] << "\n";
+			LOG(SIMULATOR) << "Data mismatch at address: "<< addr << ", result:" << (int)dmem[addr]<<", expected:" << (int)dmem_post[addr] << "\n";
 		}
 	}
-	std::cout << "Matches ::"<<correct_count<<", Mismatches::"<<wrong_count<< "\n";
+	std::cout << "Simulation Result: Matches::"<<correct_count<<", Mismatches::"<<wrong_count<< "\n";
+	std::ofstream rsltfile;
+	rsltfile.open ("sim_result.txt");
+	rsltfile<<correct_count<<","<<wrong_count<< "\n";
+	rsltfile.close();
 }
 
 XBarInput CGRA::convertStrtoXBI(std::string str) {
 
-	std::cout << "convertStr called : " << std::stoi(str,nullptr,2) << "\n";
+	LOG(SIMULATOR) << "convertStr called : " << std::stoi(str,nullptr,2) << "\n";
 
 	switch(std::stoi(str,nullptr,2)){
 		case 0:
@@ -309,7 +313,7 @@ XBarInput CGRA::convertStrtoXBI(std::string str) {
 		case 7:
 			return INV;
 		default:
-			std::cout << str;
+			LOG(SIMULATOR) << str;
 			assert(false);
 	}
 }

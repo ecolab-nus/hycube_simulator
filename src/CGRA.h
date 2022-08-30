@@ -11,6 +11,7 @@
 #include "data_structures.h"
 #include "CGRATile.h"
 #include <fstream>
+#include "debug.h"
 
 
 //Uncomment this for 16-bit full chip

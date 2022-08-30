@@ -12,6 +12,7 @@ using namespace std;
 #include "CGRA.h"
 #include <unistd.h>
 #include <string.h>
+#include "debug.h"
 
 //Uncomment this for 16-bit full chip
 //#define ARCHI_16BIT
@@ -81,8 +82,8 @@ arguments parse_arguments(int argc, char *argv[])
 
 int main(int argc, char* argv[]) {
 
-	if(argc < 2){
-		cout << "HyCUBE_Sim expect two(old version)/three(new version) arguments : instruction trc, data trace and base address allocation, optional( mem size (default 4096), cgra size x,y(default 4x4))\n";
+	if(argc < 3){
+		cout << "HyCUBE_Sim expect three arguments : instruction trc, data trace and base address allocation, optional( mem size (default 4096), cgra size x,y(default 4x4))\n";
 		return -1;
 	}
 
@@ -112,7 +113,7 @@ int main(int argc, char* argv[]) {
 		cgraInstance.parseDMEM(dmemfileName);
 	}
         cgraInstance.dumpRawData();
-	cgraInstance.printInterestedAddrOutcome();
+	//cgraInstance.printInterestedAddrOutcome();
 
 	int count=0;
 #ifdef ARCHI_16BIT
@@ -137,6 +138,6 @@ int main(int argc, char* argv[]) {
 	cgraInstance.printInterestedAddrOutcome();
 
 
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	//cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 	return 0;
 }

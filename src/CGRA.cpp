@@ -14,10 +14,11 @@
 
 namespace HyCUBESim {
 
-CGRA::CGRA(int SizeX, int SizeY,int type) {
+CGRA::CGRA(int SizeX, int SizeY,int type, int MemSize) {
 	// TODO Auto-generated constructor stub
 	sizeX = SizeX;
 	sizeY = SizeY;
+	MEM_SIZE = MemSize;
 
 	for (int y = 0; y < SizeY; ++y) {
 		for (int x = 0; x < SizeX; ++x) {
@@ -50,9 +51,13 @@ CGRA::CGRA(int SizeX, int SizeY,int type) {
 		}
 	}
 
+	for (int i = 0; i < MEM_SIZE; ++i) {
+		dmem[i]=0;
+	}
+
 }
 
-int CGRA::parseCMEM(std::string CMEMFileName,int xdim, int ydim) {
+int CGRA::configCGRA(std::string CMEMFileName,int xdim, int ydim) {
 
 	std::ifstream cmemfile(CMEMFileName.c_str());
 	std::string line;
@@ -181,7 +186,7 @@ int CGRA::parseDMEM(std::string DMEMFileName) {
 	}
 }
 
-int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int memsize) {
+int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 
 	std::ifstream dmemfile(DMEMFileName.c_str());
 	std::ifstream memallocfile(memallocFileName.c_str());
@@ -193,7 +198,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 	std::getline(dmemfile,line);
 	std::getline(memallocfile,line);
 
-	for (int i = 0; i < memsize; ++i) {
+	for (int i = 0; i < MEM_SIZE; ++i) {
 		dmem[i]=0;
 	}
 	std::map<std::string, int> spm_base_addr;
@@ -235,13 +240,49 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName,int me
 		dmem_pre[(DataType)addr]=atoi(post.c_str());
 	}
 #ifndef ARCHI_16BIT
-	dmem[memsize-2]=1;//dmem[4094]=1;
-	InterestedAddrList.push_back(memsize-2);//InterestedAddrList.push_back(4094);
+	dmem[MEM_SIZE-2]=1;//dmem[4094]=1;
+	InterestedAddrList.push_back(MEM_SIZE-2);//InterestedAddrList.push_back(4094);
 #endif
 //	LOG(SIMULATOR) << "Data Memory Content\n";
 //	for (int i = 0; i < 4096; ++i) {
 //		LOG(SIMULATOR) << i << "," << (int)dmem[i] << "\n";
 //	}
+}
+
+//dmem is byte addressable memory, base_addr is the byte address
+//data size should be number of bytes
+void CGRA::writeDMEM(HyCUBESim::CGRA& cgraInstance, int base_addr, uint8_t* data, int data_size) {
+    for (int i = 0; i < data_size; ++i) {
+        cgraInstance.dmem[base_addr + i] = data[i];
+    }
+}
+
+void CGRA::readDMEM(HyCUBESim::CGRA& cgraInstance, int base_addr, uint8_t* data, int data_size) {
+    for (int i = 0; i < data_size; ++i) {
+        data[i] = cgraInstance.dmem[base_addr + i];
+    }
+}
+
+void CGRA::invokeCGRA(HyCUBESim::CGRA& cgraInstance) {
+    int count = 0;
+
+#ifdef ARCHI_16BIT
+    while (cgraInstance.dmem[MEM_SIZE - 2] == 0) {
+        cgraInstance.executeCycle(count);
+        count++;
+    }
+#else
+    while (cgraInstance.dmem[MEM_SIZE / 2 - 1] == 0) {
+        cgraInstance.executeCycle(count);
+        count++;
+    }
+#endif
+
+    // 20 cycles for epilogue
+    for (int i = 0; i < 20; i++) {
+        cgraInstance.executeCycle(count);
+        count++;
+    }
 }
 
 int CGRA::executeCycle(int kII) {

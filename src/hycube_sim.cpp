@@ -102,13 +102,13 @@ int main(int argc, char* argv[]) {
 
 //	MEM_SIZE = std::stoi(memsize);
 
-	HyCUBESim::CGRA cgraInstance(xdim,ydim,type);
-	cgraInstance.parseCMEM(cmemfileName,xdim,ydim);
+	HyCUBESim::CGRA cgraInstance(xdim,ydim,type,MEM_SIZE);
+	cgraInstance.configCGRA(cmemfileName,xdim,ydim);
 //	if(argc==4 || argc==5){
 //		cout << "Parsing data file with base address pointers\n";
 //		string memallocfileName(argv[3]);
 	if(memallocfileName[0] != '\0'){
-		cgraInstance.parseDMEM(dmemfileName,memallocfileName,MEM_SIZE);
+		cgraInstance.parseDMEM(dmemfileName,memallocfileName);
 	}else{
 		cgraInstance.parseDMEM(dmemfileName);
 	}

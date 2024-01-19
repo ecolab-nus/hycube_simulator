@@ -89,7 +89,7 @@ int CGRA::configCGRA(std::string CMEMFileName,int xdim, int ydim) {
 		    std::getline(iss,phyloc,',');
 		    std::getline(iss,op,',');
 
-		    int y=i/ydim;
+		    int y=i/xdim;
 		    int x=i%xdim;
 
 		    LOG(SIMULATOR) << "T=" << t << ",Y=" << y << ",X=" << x << "," << op << "\n";

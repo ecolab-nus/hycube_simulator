@@ -11,15 +11,16 @@
 #include "data_structures.h"
 #include "opcodes.h"
 #include "debug.h"
-
+#include "CGRA.h"
 //Uncomment this for 16-bit full chip
 //#define ARCHI_16BIT
 
 namespace HyCUBESim {
-
+	class CGRA;
+	
 	class CGRATile {
 		public:
-			CGRATile(int x, int y, bool mem, std::map<DataType,uint8_t>* dmemPtr);
+			CGRATile(int x, int y, bool mem, std::map<DataType,uint8_t>* dmemPtr,CGRA* cgraPtr);
 			std::map<Dir,std::pair<bool,DataType>> inputs;
 			std::map<Dir,CGRATile*> connectedTiles;
 
@@ -46,6 +47,7 @@ namespace HyCUBESim {
 
 			std::vector<HyIns> configMem;
 			std::map<DataType,uint8_t>* dmemPtr;
+			CGRA* cgraPtr;
 
 		private:
 			int X;

@@ -15,7 +15,7 @@ using namespace std;
 #include "debug.h"
 
 //Uncomment this for 16-bit full chip
-//#define ARCHI_16BIT
+// #define ARCHI_16BIT
 struct arguments
 {
 	string cmemfileName;
@@ -129,6 +129,8 @@ int main(int argc, char* argv[]) {
 		count++;
 	}
 
+	cgraInstance.setTotalCycles(count);
+
 #endif
 	//20 cycles for epilogue
 	for(int i = 0; i < 20;i++){
@@ -137,7 +139,7 @@ int main(int argc, char* argv[]) {
 	}
 	cgraInstance.printInterestedAddrOutcome();
 
-
+	cgraInstance.dumpStat();
 	//cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 	return 0;
 }

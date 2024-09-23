@@ -8,16 +8,18 @@
 #include "CGRATile.h"
 #include <assert.h>
 #include <iostream>
+#include "CGRA.h"
 #include "data_structures.h"
 
 namespace HyCUBESim {
 
-	CGRATile::CGRATile(int x, int y, bool mem, std::map<DataType,uint8_t>* dmemPtr) {
+	CGRATile::CGRATile(int x, int y, bool mem, std::map<DataType,uint8_t>* dmemPtr, CGRA* cgraPtr) {
 		// TODO Auto-generated constructor stub
 		this->X = x;
 		this->Y = y;
 		this->MEM = mem;
 		this->dmemPtr = dmemPtr;
+		this->cgraPtr = cgraPtr;
 
 		prevIns.opcode=NOP;
 		prevIns.xB.P=INV;
@@ -922,6 +924,10 @@ namespace HyCUBESim {
 			//assert(op2 % 4 == 0);//dmd
 			res = res | (*dmemPtr)[op2] | ((*dmemPtr)[op2+1] << 8) | ((*dmemPtr)[op2+2] << 16) | ((*dmemPtr)[op2+3] << 24);
 		}
+		for (int i = 0; i < size; ++i) {
+			cgraPtr->spm_read_count[op2 + i]=  cgraPtr->spm_read_count[op2 + i]+1;
+		}
+		
 		return res;
 	}
 
@@ -954,6 +960,9 @@ namespace HyCUBESim {
 			(*dmemPtr)[op2+1] = stdata1;
 			(*dmemPtr)[op2+2] = stdata2;
 			(*dmemPtr)[op2+3] = stdata3;
+		}
+		for (int i = 0; i < size; ++i) {
+			cgraPtr->spm_write_count[op2 + i]=  cgraPtr->spm_write_count[op2 + i]+1;
 		}
 		return 1;
 	}

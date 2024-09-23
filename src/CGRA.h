@@ -11,6 +11,8 @@
 #include "data_structures.h"
 #include "CGRATile.h"
 #include <fstream>
+#include <map>
+#include <string>
 #include "debug.h"
 
 
@@ -19,7 +21,11 @@
 
 namespace HyCUBESim {
 
+class CGRATile;
+
 class CGRA {
+
+	friend class CGRATile;
 
 	public:
 		CGRA(int SizeX, int SizeY, int type, int MEM_SIZE);
@@ -39,6 +45,8 @@ class CGRA {
 		
 		void printInterestedAddrOutcome();
 		void dumpRawData();
+		void setTotalCycles(int tc){ total_cycles = tc;}
+		void dumpStat();
 
 
 	private:
@@ -46,8 +54,18 @@ class CGRA {
 		int sizeX;
 		int sizeY;
 		int MEM_SIZE;
+		
 		std::vector<int> InterestedAddrList;
 		XBarInput convertStrtoXBI(std::string str);
+
+		//cgra execution statistics
+		std::map<std::string, std::pair<int,int>> spm_allocation;
+		//SPM read
+		std::vector<int> spm_read_count;
+		//SPM write
+		std::vector<int> spm_write_count;
+
+		int total_cycles = 0;
 
 	};
 

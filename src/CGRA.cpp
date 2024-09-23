@@ -11,6 +11,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <assert.h>
+#include <utility>
+#include <algorithm>
+#include <numeric>
 
 namespace HyCUBESim {
 
@@ -23,9 +26,9 @@ CGRA::CGRA(int SizeX, int SizeY,int type, int MemSize) {
 	for (int y = 0; y < SizeY; ++y) {
 		for (int x = 0; x < SizeX; ++x) {
 			if(type == 1)
-				CGRATiles[y][x] = new CGRATile(x,y,(x==0),&dmem);
+				CGRATiles[y][x] = new CGRATile(x,y,(x==0),&dmem, this);
 			else if(type == 2)
-				CGRATiles[y][x] = new CGRATile(x,y,(x==0 or (x==SizeX-1)),&dmem);
+				CGRATiles[y][x] = new CGRATile(x,y,(x==0 or (x==SizeX-1)),&dmem,this);
 		}
 	}
 
@@ -54,6 +57,13 @@ CGRA::CGRA(int SizeX, int SizeY,int type, int MemSize) {
 	for (int i = 0; i < MEM_SIZE; ++i) {
 		dmem[i]=0;
 	}
+
+	spm_read_count.resize(MEM_SIZE);
+    std::fill(spm_read_count.begin(), spm_read_count.end(), 0);
+
+	
+	spm_write_count.resize(MEM_SIZE);
+    std::fill(spm_write_count.begin(), spm_write_count.end(), 0);
 
 }
 
@@ -232,6 +242,8 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 
 		addr = spm_base_addr[var_name]+atoi(offset.c_str());
 
+		spm_allocation[var_name] = std::make_pair(spm_base_addr[var_name], addr);
+
 		//LOG(SIMULATOR) << addr << "," << pre << "\n";
 		InterestedAddrList.push_back(addr);
 
@@ -260,6 +272,7 @@ void CGRA::writeDMEM(HyCUBESim::CGRA& cgraInstance, int base_addr, uint8_t* data
 void CGRA::readDMEM(HyCUBESim::CGRA& cgraInstance, int base_addr, uint8_t* data, int data_size) {
     for (int i = 0; i < data_size; ++i) {
         data[i] = cgraInstance.dmem[base_addr + i];
+
     }
 }
 
@@ -299,6 +312,40 @@ int CGRA::executeCycle(int kII) {
 		}
 	}
 }
+
+void CGRA::dumpStat(){
+	std::stringstream ss;
+	ss<<"#### total cycles:"<<total_cycles<<"\n";
+	ss<<"#### mem allications:\t";
+	for(auto [name, alloc]: spm_allocation){
+		ss<<name<<":["<<alloc.first<<","<<alloc.second<<"]\t";
+	}
+	ss<<"\n";
+	ss<<"#### read and write:\n";
+	int total_read_count, total_write_count, readed_element_num, written_element_num;
+
+	int number_of_elements = 0;
+
+	int bytes_per_element = 4;
+	#ifdef ARCHI_16BIT
+		bytes_per_element = 2;
+	#endif
+	readed_element_num = std::count_if(spm_read_count.begin(), spm_read_count.end(), [](int x) {
+        return x != 0;
+    }) / bytes_per_element;
+	written_element_num = std::count_if(spm_write_count.begin(), spm_write_count.end(), [](int x) {
+        return x != 0;
+    }) / bytes_per_element;
+
+	total_read_count = std::accumulate(spm_read_count.begin(), spm_read_count.end(), 0)/bytes_per_element;
+	total_write_count = std::accumulate(spm_write_count.begin(), spm_write_count.end(), 0)/bytes_per_element;
+	ss<<"# of read:"<<total_read_count<<"\n";
+	ss<<"# of write:"<<total_write_count<<"\n";
+	ss<<"readed element number:"<<readed_element_num<<"\n";
+	ss<<"written element number:"<<written_element_num<<"\n";
+
+	std::cout<<ss.str();
+}
 void CGRA::dumpRawData(){
 	std::ofstream myfile;
  	myfile.open ("dumped_raw_data.txt");
@@ -324,7 +371,7 @@ void CGRA::printInterestedAddrOutcome() {
 			correct_count++;
 		}else{
 			wrong_count++;
-			LOG(SIMULATOR) << "Data mismatch at address: "<< addr << ", result:" << (int)dmem[addr]<<", expected:" << (int)dmem_post[addr] << "\n";
+			std::cout << "Data mismatch at address: "<< addr << ", result:" << (int)dmem[addr]<<", expected:" << (int)dmem_post[addr] << "\n";
 		}
 	}
 	std::cout << "Simulation Result: Matches::"<<correct_count<<", Mismatches::"<<wrong_count<< "\n";

@@ -45,7 +45,7 @@ class CGRA {
 		
 		void printInterestedAddrOutcome();
 		void dumpRawData();
-		void setTotalCycles(int tc){ total_cycles = tc;}
+		void setTotalCycles(int tc){ total_cgra_cycles = tc;}
 		void dumpStat();
 
 
@@ -65,7 +65,9 @@ class CGRA {
 		//SPM write
 		std::vector<int> spm_write_count;
 
-		int total_cycles = 0;
+		int total_cgra_cycles = 0;
+		int cgra_frequnecy = 100; //MHz
+		int spi_frequnecy = 284; //MHz
 
 	};
 

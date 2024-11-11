@@ -137,6 +137,7 @@ int main(int argc, char* argv[]) {
 		cgraInstance.executeCycle(count);
 		count++;
 	}
+	
 	cgraInstance.printInterestedAddrOutcome();
 
 	cgraInstance.dumpStat();

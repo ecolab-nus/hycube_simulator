@@ -315,7 +315,7 @@ int CGRA::executeCycle(int kII) {
 
 void CGRA::dumpStat(){
 	std::stringstream ss;
-	ss<<"#### total cycles:"<<total_cycles<<"\n";
+	ss<<"-------------------------------------\n";
 	ss<<"#### mem allications:\t";
 	for(auto [name, alloc]: spm_allocation){
 		ss<<name<<":["<<alloc.first<<","<<alloc.second<<"]\t";
@@ -326,6 +326,7 @@ void CGRA::dumpStat(){
 
 	int number_of_elements = 0;
 
+	int DMA_bits_per_cycle = 4; 
 	int bytes_per_element = 4;
 	#ifdef ARCHI_16BIT
 		bytes_per_element = 2;
@@ -343,7 +344,22 @@ void CGRA::dumpStat(){
 	ss<<"# of write:"<<total_write_count<<"\n";
 	ss<<"readed element number:"<<readed_element_num<<"\n";
 	ss<<"written element number:"<<written_element_num<<"\n";
+	ss<<"####  CGRA cycles: "<<(float(total_cgra_cycles)) <<"\n";
 
+	const int bit_in_bytes = 8;
+	int data_load_cycle = readed_element_num * bytes_per_element * bit_in_bytes / DMA_bits_per_cycle;
+	int data_write_cycle = written_element_num * bytes_per_element * bit_in_bytes / DMA_bits_per_cycle;
+	ss<<"####  data transfer cycles: "<<float(data_load_cycle + data_write_cycle)<<"\n";
+	ss<<"####  data load cycles: "<<float(data_load_cycle)<<"\n";
+	ss<<"####  data write cycles: "<<float(data_write_cycle) <<"\n";
+
+	ss<<"-------------------------------------\n";
+	ss<<"####  CGRA execute time (us): "<<(float(total_cgra_cycles)) / cgra_frequnecy <<"\n";
+
+	ss<<"####  data transfer time (us): "<<float(data_load_cycle + data_write_cycle)/ spi_frequnecy <<"\n";
+	ss<<"####  data load time (us): "<<float(data_load_cycle)/ spi_frequnecy <<"\n";
+	ss<<"####  data write time (us): "<<float(data_write_cycle)/ spi_frequnecy  <<"\n";
+	ss<<"-------------------------------------\n";
 	std::cout<<ss.str();
 }
 void CGRA::dumpRawData(){

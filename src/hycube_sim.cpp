@@ -14,8 +14,7 @@ using namespace std;
 #include <string.h>
 #include "debug.h"
 
-//Uncomment this for 16-bit full chip
-// #define ARCHI_16BIT
+#include "ArchPrecision.h"
 struct arguments
 {
 	string cmemfileName;

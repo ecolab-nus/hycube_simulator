@@ -12,8 +12,7 @@
 #include "opcodes.h"
 #include "debug.h"
 #include "CGRA.h"
-//Uncomment this for 16-bit full chip
-//#define ARCHI_16BIT
+#include "ArchPrecision.h"
 
 namespace HyCUBESim {
 	class CGRA;

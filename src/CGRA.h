@@ -14,10 +14,8 @@
 #include <map>
 #include <string>
 #include "debug.h"
+#include "ArchPrecision.h"
 
-
-//Uncomment this for 16-bit full chip
-//#define ARCHI_16BIT
 
 namespace HyCUBESim {
 

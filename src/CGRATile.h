@@ -14,6 +14,12 @@
 #include "CGRA.h"
 #include "ArchPrecision.h"
 
+
+#ifdef ARCHI_16BIT
+  const unsigned int MASK_BITs = 0xFFFF;
+#else
+	const unsigned int MASK_BITs = 0xFFFFFFFF;
+#endif
 namespace HyCUBESim {
 	class CGRA;
 	

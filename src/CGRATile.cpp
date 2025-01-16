@@ -131,7 +131,8 @@ namespace HyCUBESim {
 				break;
 			case MUL :
 				LOG(SIMULATOR) << ": MUL," << operand1 << "," << operand2 << "\n";
-				ALUTempOut = operand1 * operand2;
+				ALUTempOut = operand1 * operand2; 
+				ALUTempOut &= MASK_BITs; // to handle overflow
 				break;
 			case SEXT :
 				LOG(SIMULATOR) << ": SEXT," << operand1 << "," << operand2 << "\n";

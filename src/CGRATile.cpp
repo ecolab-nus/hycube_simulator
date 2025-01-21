@@ -124,10 +124,12 @@ namespace HyCUBESim {
 			case ADD :
 				LOG(SIMULATOR) << ": ADD," << operand1 << "," << operand2 << "\n";
 				ALUTempOut =  operand1 + operand2;
+				ALUTempOut &= MASK_BITs; // to handle overflow
 				break;
 			case SUB :
 				LOG(SIMULATOR) << ": SUB," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 - operand2;
+				ALUTempOut &= MASK_BITs; // to handle overflow
 				break;
 			case MUL :
 				LOG(SIMULATOR) << ": MUL," << operand1 << "," << operand2 << "\n";
@@ -145,10 +147,12 @@ namespace HyCUBESim {
 			case LS :
 				LOG(SIMULATOR) << ": LS," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 << operand2;
+				ALUTempOut &= MASK_BITs; // to handle overflow
 				break;
 			case RS :
 				LOG(SIMULATOR) << ": RS," << operand1 << "," << operand2 << "\n";
 				ALUTempOut = operand1 >> operand2;
+				ALUTempOut &= MASK_BITs; // to handle overflow
 				break;
 			case ARS :
 				LOG(SIMULATOR) << ": ARS," << operand1 << "," << operand2 << "\n";

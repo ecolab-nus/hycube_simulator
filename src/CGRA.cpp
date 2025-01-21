@@ -244,7 +244,7 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 
 		spm_allocation[var_name] = std::make_pair(spm_base_addr[var_name], addr);
 
-		//LOG(SIMULATOR) << addr << "," << pre << "\n";
+		LOG(SIMULATOR) << addr << "," << pre << "\n";
 		InterestedAddrList.push_back(addr);
 
 		dmem[(DataType)addr]=atoi(pre.c_str());
@@ -255,10 +255,10 @@ int CGRA::parseDMEM(std::string DMEMFileName,std::string memallocFileName) {
 	dmem[MEM_SIZE-2]=1;//dmem[4094]=1;
 	InterestedAddrList.push_back(MEM_SIZE-2);//InterestedAddrList.push_back(4094);
 #endif
-//	LOG(SIMULATOR) << "Data Memory Content\n";
-//	for (int i = 0; i < 4096; ++i) {
-//		LOG(SIMULATOR) << i << "," << (int)dmem[i] << "\n";
-//	}
+	LOG(SIMULATOR) << "Data Memory Content\n";
+	for (int i = 0; i < 4096; ++i) {
+		LOG(SIMULATOR) << i << "," << (int)dmem[i] << "\n";
+	}
 }
 
 //dmem is byte addressable memory, base_addr is the byte address

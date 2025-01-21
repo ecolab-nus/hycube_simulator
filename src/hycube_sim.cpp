@@ -116,9 +116,9 @@ int main(int argc, char* argv[]) {
 
 	int count=0;
 #ifdef ARCHI_16BIT
-	cout << "XXX->" << cgraInstance.dmem[MEM_SIZE-2] << " " << MEM_SIZE-2 << "\n";
+	// cout << "XXX->" << cgraInstance.dmem[MEM_SIZE-2] << " " << MEM_SIZE-2 << "\n";
 	while(cgraInstance.dmem[MEM_SIZE-2]==0){ 
-		cout << "XXX->" << cgraInstance.dmem[MEM_SIZE-2] << "\n";
+		// cout << "XXX->" << cgraInstance.dmem[MEM_SIZE-2] << "\n";
 		cgraInstance.executeCycle(count);
 		count++;
 	}
@@ -128,9 +128,11 @@ int main(int argc, char* argv[]) {
 		count++;
 	}
 
-	cgraInstance.setTotalCycles(count);
+	
 
 #endif
+	cgraInstance.setTotalCycles(count);
+
 	//20 cycles for epilogue
 	for(int i = 0; i < 20;i++){
 		cgraInstance.executeCycle(count);

@@ -10,7 +10,7 @@ enum Regs{Reg0,Reg1,Reg2,Reg3};
 enum XBarInput{NORTH_I,EAST_I,WEST_I,SOUTH_I,RES_I,ALU_I,INV};
 enum Dir{NORTH,EAST,WEST,SOUTH};
 
-typedef uint32_t DataType;
+typedef uint64_t DataType;
 
 typedef struct{
 	XBarInput P;

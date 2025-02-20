@@ -15,6 +15,8 @@
 #define SEXT 4
 #define DIV 5
 
+#define VADD 6
+#define VMUL 7
 
 #define LS 8
 #define RS 9
@@ -22,6 +24,10 @@
 #define AND 11
 #define OR 12
 #define XOR 13
+ 
+#define LOADD 14 // load 64 bits
+#define STORED 15 // store 64 bits
+ 
 
 
 #define SELECT 16

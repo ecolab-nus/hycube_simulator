@@ -10,6 +10,7 @@
 
 #include "data_structures.h"
 #include "opcodes.h"
+#include <cstdint>
 #define ARCHI_16BIT
 
 #ifdef ARCHI_16BIT
@@ -106,6 +107,8 @@ namespace HyCUBESim {
 			DataType load(DataType op2, int size);
 			DataType store(DataType op1, DataType op2,int size);
 			DataType jumpl(DataType op2);
+			float getFP8Data(uint8_t binary);
+			uint8_t convertFP8toBinary(float data);
 		};
 
 } /* namespace HyCUBESim */

@@ -10,6 +10,7 @@
 
 #include "data_structures.h"
 #include "CGRATile.h"
+#include "debug.h"
 #include <fstream>
 #include <iostream>
 #include <fstream>

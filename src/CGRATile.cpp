@@ -8,6 +8,7 @@
  #include "CGRATile.h"
  #include <bitset>
  #include <assert.h>
+#include <cstdint>
  #include <iostream>
 #include <cmath>
  #include "debug.h"
@@ -139,7 +140,31 @@
 				 ALUTempOut &= MASK_BITs; // to handle overflow
 				 break;
 			 case VMUL :
-				 LOG(SIMULATOR) << ": VMUL," << operand1 << "," << operand2 << "\n";
+			 LOG(SIMULATOR) << ": VMUL," << operand1 << "," << operand2 << "\n";
+			 result = 0;
+			 for (int i = 0; i < 8; i++) {
+				 // Extract bytes from the same position in both numbers
+				 uint8_t byte_a = ( operand1>> (i * 8)) & 0xFF;
+				 uint8_t byte_b = (operand2 >> (i * 8)) & 0xFF;
+				 
+				 // Multiply the bytes
+				 //@TODO: this might cause overflow. but FP8 should be able to solve it.
+				 float float_a = getFP8Data(byte_a), float_b = getFP8Data(byte_b);
+				 float product = float_a * float_b;
+				 uint8_t product_binary = convertFP8toBinary(product);
+				 LOG(SIMULATOR)<<int(byte_a)<<", "<<int(byte_b)<<", " <<float_a<<", "<<float_b<<", "<<product<<", "<<(int)product_binary<<"\n";
+				 LOG(SIMULATOR)<<(static_cast<uint64_t>(int(product_binary)) << (i * 8)) / (pow(2, i * 8))<<"\n";
+				 // Place the result in the corresponding position
+				 result |= (static_cast<uint64_t>(int(product_binary)) << (i * 8));
+				 LOG(SIMULATOR)<<std::bitset<64>(result)<<"\n";
+			 } 
+			 LOG(SIMULATOR)<<"final"<<std::bitset<64>(result)<<", "<<result<<"\n";
+			 ALUTempOut = result;
+			 // ALUTempOut &= MASK_BITs; // to handle overflow
+			 break;
+			 case VADD :
+				 LOG(SIMULATOR) << ": VADD," << operand1 << "," << operand2 << "\n";
+				 result = 0;
 				 for (int i = 0; i < 8; i++) {
 					 // Extract bytes from the same position in both numbers
 					 uint8_t byte_a = ( operand1>> (i * 8)) & 0xFF;
@@ -147,29 +172,14 @@
 					 
 					 // Multiply the bytes
 					 //@TODO: this might cause overflow. but FP8 should be able to solve it.
-					 uint8_t product = byte_a * byte_b;
-					 
+					 float float_a = getFP8Data(byte_a), float_b = getFP8Data(byte_b);
+					 float product = float_a + float_b;
+					 uint8_t product_binary = convertFP8toBinary(product);
+					 LOG(SIMULATOR)<<int(byte_a)<<", "<<int(byte_b)<<", " <<float_a<<", "<<float_b<<", "<<product<<", "<<(int)product_binary<<"\n";
+					 LOG(SIMULATOR)<<(static_cast<uint64_t>(int(product_binary)) << (i * 8)) / (pow(2, i * 8))<<"\n";
 					 // Place the result in the corresponding position
-					 result |= (static_cast<uint64_t>(product) << (i * 8));
-				 } 
-				 ALUTempOut = result;
-				//  ALUTempOut &= MASK_BITs; // to handle overflow
-				 break;
-			 case VADD :
-				 LOG(SIMULATOR) << ": VADD," << operand1 << "," << operand2 << "\n";
-				 result = 0;
-				 for (int i = 0; i < 4; i++) {
-					 // Extract bytes from the same position in both numbers
-					 uint8_t byte_a = ( operand1>> (i * 16)) & 0xFFFF;
-					 uint8_t byte_b = (operand2 >> (i * 16)) & 0xFFFF;
-					 
-					 // Multiply the bytes
-					 //@TODO: this might cause overflow. but FP8 should be able to solve it.
-					 uint8_t product = byte_a + byte_b;
-					 LOG(SIMULATOR) <<int(byte_a)<<", "<<int(byte_b)<<", "<<int(product)<<"\n";
-					 LOG(SIMULATOR)<<(static_cast<uint64_t>(product) << (i * 16)) / (pow(2, i * 16))<<", "<<std::bitset<64>(result)<<"\n";
-					 // Place the result in the corresponding position
-					 result |= (static_cast<uint64_t>(product) << (i * 16));
+					 result |= (static_cast<uint64_t>(int(product_binary)) << (i * 8));
+					 LOG(SIMULATOR)<<std::bitset<64>(result)<<"\n";
 				 } 
 				 LOG(SIMULATOR)<<"final"<<std::bitset<64>(result)<<", "<<result<<"\n";
 				 ALUTempOut = result;
@@ -1274,90 +1284,140 @@
  
  }
  
- void CGRATile::printRegisterInfo() {
-	 if(!P.empty()){
-		 LOG(SIMULATOR) << "P=" << P.front();
-	 }
-	 else{
-		 LOG(SIMULATOR) << "P=INV";
-	 }
- 
-	 if(!I1.empty()){
-		 LOG(SIMULATOR) << ",I1=" << I1.front();
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",I1=INV";
-	 }
- 
-	 if(!I2.empty()){
-		 LOG(SIMULATOR) << ",I2=" << I2.front();
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",I2=INV";
-	 }
- 
- 
-	 if(R0.first){
-		 LOG(SIMULATOR) << ",R0=" << R0.second;
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",R0=INV";
-	 }
- 
-	 if(R1.first){
-		 LOG(SIMULATOR) << ",R1=" << R1.second;
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",R1=INV";
-	 }
- 
-	 if(R2.first){
-		 LOG(SIMULATOR) << ",R2=" << R2.second;
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",R2=INV";
-	 }
- 
-	 if(R3.first){
-		 LOG(SIMULATOR) << ",R3=" << R3.second;
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",R3=INV";
-	 }
- 
-	 if(RES.first){
-		 LOG(SIMULATOR) << ",RES=" << RES.second;
-	 }
-	 else{
-		 LOG(SIMULATOR) << ",RES=INV";
-	 }
-	 LOG(SIMULATOR) << "\n";
- }
- 
- 
- 
-	 DataType CGRATile::jumpl(DataType op2) {
-		 while(!P.empty()){
-			 P.pop();
-		 }
-		 while(!I1.empty()){
-			 I1.pop();
-		 }
-		 while(!I2.empty()){
-			 I2.pop();
-		 }
- 
-		 LSR = op2 & 0b11111;
-		 LER = (op2 >> 5) & 0b11111;
-		 PC = (op2 >> 10) & 0b11111;
- 
-		 LOG(SIMULATOR) << ": JUMPL,LSR=" << LSR << ",LER=" << LER << ",PC=" << PC << "\n";
- 
-		 assert(LSR < 32);
-		 assert(LER < 32);
-		 assert(PC < 32);
-		 return 1;
-	 }
+void CGRATile::printRegisterInfo() {
+	if(!P.empty()){
+		LOG(SIMULATOR) << "P=" << P.front();
+	}
+	else{
+		LOG(SIMULATOR) << "P=INV";
+	}
+
+	if(!I1.empty()){
+		LOG(SIMULATOR) << ",I1=" << I1.front();
+	}
+	else{
+		LOG(SIMULATOR) << ",I1=INV";
+	}
+
+	if(!I2.empty()){
+		LOG(SIMULATOR) << ",I2=" << I2.front();
+	}
+	else{
+		LOG(SIMULATOR) << ",I2=INV";
+	}
+
+
+	if(R0.first){
+		LOG(SIMULATOR) << ",R0=" << R0.second;
+	}
+	else{
+		LOG(SIMULATOR) << ",R0=INV";
+	}
+
+	if(R1.first){
+		LOG(SIMULATOR) << ",R1=" << R1.second;
+	}
+	else{
+		LOG(SIMULATOR) << ",R1=INV";
+	}
+
+	if(R2.first){
+		LOG(SIMULATOR) << ",R2=" << R2.second;
+	}
+	else{
+		LOG(SIMULATOR) << ",R2=INV";
+	}
+
+	if(R3.first){
+		LOG(SIMULATOR) << ",R3=" << R3.second;
+	}
+	else{
+		LOG(SIMULATOR) << ",R3=INV";
+	}
+
+	if(RES.first){
+		LOG(SIMULATOR) << ",RES=" << RES.second;
+	}
+	else{
+		LOG(SIMULATOR) << ",RES=INV";
+	}
+	LOG(SIMULATOR) << "\n";
+}
+
+
+
+DataType CGRATile::jumpl(DataType op2) {
+	while(!P.empty()){
+		P.pop();
+	}
+	while(!I1.empty()){
+		I1.pop();
+	}
+	while(!I2.empty()){
+		I2.pop();
+	}
+
+	LSR = op2 & 0b11111;
+	LER = (op2 >> 5) & 0b11111;
+	PC = (op2 >> 10) & 0b11111;
+
+	LOG(SIMULATOR) << ": JUMPL,LSR=" << LSR << ",LER=" << LER << ",PC=" << PC << "\n";
+
+	assert(LSR < 32);
+	assert(LER < 32);
+	assert(PC < 32);
+	return 1;
+}
+float CGRATile::getFP8Data(uint8_t value){
+	bool sign = (value & 0x80) != 0;           // Bit 7
+	uint8_t exp = (value & 0x78) >> 3;         // Bits 6-3
+	uint8_t mantissa = value & 0x07;           // Bits 2-0
+
+	if (exp == 0) {
+		if (mantissa == 0) {
+			return sign ? -0.0f : 0.0f;
+		}
+	}
+
+	if (exp == 0x0F) {
+		if (mantissa == 0) {
+			return sign ? -INFINITY : INFINITY;
+		}
+		return NAN;
+	}
+
+	const int bias = 7;
+	float result = powf(2.0f, static_cast<float>(exp) - bias);
+	result *= (1.0f + static_cast<float>(mantissa) / 8.0f);
+	return sign ? -result : result;
+	
+}
+uint8_t CGRATile::convertFP8toBinary(float value){
+	if (std::isnan(value)) return 0x7F;
+	if (std::isinf(value)) return value > 0 ? 0x78 : 0xF8;
+	if (value == 0.0f || std::fabs(value) < std::pow(2.0f, -6.0f)) {
+		return std::signbit(value) ? 0x80 : 0x00;
+	}
+
+	uint8_t sign = std::signbit(value) ? 0x80 : 0x00;
+	float abs_value = std::fabs(value);
+	int exp = std::floor(std::log2(abs_value));
+	
+	if (exp > 7) return sign | 0x78;
+	
+	float normalized = abs_value / std::pow(2.0f, exp);
+	float mantissa_value = (normalized - 1.0f) * 8.0f;
+	uint8_t mantissa = static_cast<uint8_t>(std::round(mantissa_value));
+	
+	if (mantissa == 8) {
+		mantissa = 0;
+		exp++;
+		if (exp > 7) return sign | 0x78;
+	}
+	
+	uint8_t biased_exp = static_cast<uint8_t>(exp + 7);
+	return sign | ((biased_exp & 0x0F) << 3) | (mantissa & 0x07);
+	}
  
  
  } /* namespace HyCUBESim */

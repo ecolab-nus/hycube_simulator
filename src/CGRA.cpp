@@ -6,6 +6,7 @@
  */
 
 #include "CGRA.h"
+#include "opcodes.h"
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -117,6 +118,8 @@ int CGRA::parseCMEM(std::string CMEMFileName) {
 			currIns.constant = std::stoi(/*op.substr(46,3) +*/ op.substr(2,27),nullptr,2);
 			// std::cout<<"currIns.constant1"<<std::bitset<26>(currIns.constant).to_string()<<std::endl;
 			// std::cout<<"currIns.constant1"<<currIns.constant<<std::endl;
+
+			//Zhaoying: need to check this. As contant only takes 16 bit now.
 			if((currIns.constant >> 26) == 1){ //negative number identification
 				currIns.constant = currIns.constant | 0b11111000000000000000000000000000;
 // std::cout<<"currIns.constant2"<<std::bitset<26>(currIns.constant).to_string()<<std::endl;
@@ -124,6 +127,11 @@ int CGRA::parseCMEM(std::string CMEMFileName) {
 
 
 			currIns.opcode = std::stoi(op.substr(29,5),nullptr,2);
+
+			if(currIns.opcode == VADD || currIns.opcode == VMUL){
+				LOG(SIMULATOR)<<"We find a VADD or VMUL instruction\n";
+				assert(op.substr(2,1) == "1");
+			}
 
 		    currIns.regwen[Reg0] = std::stoi(op.substr(34,1),nullptr,2);
 		    currIns.regwen[Reg2] = std::stoi(op.substr(35,1),nullptr,2);
